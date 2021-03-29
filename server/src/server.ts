@@ -1,6 +1,9 @@
+import "reflect-metadata";
 import express, { request, response } from 'express';
 import cors from 'cors';
 import { v4 } from 'uuid';
+
+import './shared/database';
 
 const app = express();
 

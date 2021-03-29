@@ -1,0 +1,8 @@
+{
+    "type": "DRIVER USING (STRING)",
+    "host": "HOST DATA BASE (STRING)",
+    "port": "PORT DATA BASE (NUMBER)",
+    "username": "USER DATA BASE (STRING)",
+    "password": "PASSWORD DATA BASE (STRING)",
+    "database": "NAME DATA BASE (STRING)"
+}
