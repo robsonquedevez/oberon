@@ -13,7 +13,7 @@ export const ContentIllustration  = styled.div`
     justify-content: space-between;
     align-items: center;
     flex-direction: column;
-    background-color: #9999f9;
+    background-color: #26a69a;
     padding: 5rem;
 
     div {
@@ -24,6 +24,7 @@ export const ContentIllustration  = styled.div`
         font-weight: 400;
         font-size: 2rem;
         margin-top: 1.2rem;
+        color: #F8F9F9;
     }
 `;
 
@@ -48,7 +49,7 @@ export const ContentForm  = styled.div`
 `;
 
 export const Logo = styled.img`
-    width: 120px;
+    width: 150px;
 `;
 
 export const Illustration = styled.img`
