@@ -13,3 +13,6 @@
 */*.mobileprovision
 */*.orig.*
 */web-build/
+
+#Server
+ormconfig.json
