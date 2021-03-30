@@ -17,6 +17,7 @@ A gestão de equipes externas por geolocalização buscará melhorias nos proces
 - [Express](https://expressjs.com/pt-br/)
 - [Axios](https://github.com/axios/axios)
 - [React Native Maps](https://github.com/react-native-maps/react-native-maps)
+- [Styled-components](https://styled-components.com/)
 
 ### 💊 Monorepo
 - Server
