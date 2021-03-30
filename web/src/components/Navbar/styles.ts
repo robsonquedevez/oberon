@@ -1,4 +1,8 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+
+interface ItemProps {
+    isActive?: boolean;
+}
 
 export const Container = styled.div`
     width: 5rem;
@@ -11,6 +15,7 @@ export const Container = styled.div`
     left: 0;
     background: #26a69a;
     padding: 2rem 0rem;
+    z-index: 999;
 
     .logout {
         color: #1C2833;
@@ -39,18 +44,9 @@ export const Options = styled.div`
     align-items: center;
     flex-direction: column;
 
-    .selected {
-        border-left-color: #F8F9F9;
-        border-left-width: 4px;
-        border-left-style: solid;
-
-        a {
-            color: #F8F9F9;
-        }
-    }
 `;
 
-export const Item = styled.div`
+export const Item = styled.div<ItemProps>`
     width: 100%;
     height: 4rem;
     display: flex;
@@ -68,6 +64,20 @@ export const Item = styled.div`
         }
         
     }
+
+    ${
+        props => 
+        props.isActive &&
+        css`
+            border-left-color: #F8F9F9;
+            border-left-width: 4px;
+            border-left-style: solid;
+
+            a {
+                color: #F8F9F9;
+            }
+        `
+    }   
 
     a:hover {
         color: #F8F9F9;

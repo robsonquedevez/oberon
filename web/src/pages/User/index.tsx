@@ -1,18 +1,19 @@
 import React from 'react';
 
 import Navbar from '../../components/Navbar';
-import Map from '../../components/Map';
 
 import { Container } from './styles';
 
-const Dashboard: React.FC = () => {
+const User: React.FC = () => {
 
-    return (
+    return(
         <Container>
             <Navbar />
-            <Map />
+            <div style={{ width: '100%' }}>
+                <h1 style={{ textAlign:'center' }}>Users</h1>
+            </div>
         </Container>
     );
 }
 
-export default Dashboard;
+export default User;
