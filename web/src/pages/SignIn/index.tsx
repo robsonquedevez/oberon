@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import logo from '../../assets/logoOberon.svg';
 import illustration from '../../assets/IllustrationInitial.svg';
@@ -9,6 +10,11 @@ import Input from '../../components/Input';
 import Button from '../../components/Button';
 
 const SignIn: React.FC = () => {
+    const history = useHistory();
+
+    const handleSubmit = useCallback(() => {
+        history.push('/dashboard');
+    }, []);
 
     return (
         <Container>
@@ -36,7 +42,7 @@ const SignIn: React.FC = () => {
                     <Input label='Usuário' icon='person' type='text' />
                     <Input label='Senha' icon='password' type='password' />
                     <a href="#">Esqueceu a senha?</a>
-                    <Button label='Acessar' icon='login' isLoading={true} />
+                    <Button label='Acessar' icon='login' isLoading={true} onClick={handleSubmit} />
                 </div>
             </ContentForm>
 
