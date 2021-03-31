@@ -4,7 +4,6 @@ export const Container = styled.div`
     width: 100vw;
     height: 100vh;
     display: flex;
-    align-items: center;
     flex-direction: row;
 `;
 
@@ -19,6 +18,7 @@ export const Content = styled.div`
 
     .edit_user, .delete_user {
         color: #1C2833;
+        transition: color 0.3s;
     }
 
     li {
@@ -40,8 +40,8 @@ export const Content = styled.div`
         color: red;
     }
 
-    .btn-create-user {
-        margin-top: -40px;
-        margin-right: 15px;
+    button {
+        margin-bottom: -40px;
+        margin-right: 20px;
     }
 `;
