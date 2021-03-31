@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
             </Options>
 
             <div>
-            <a href="/" className='logout' title='Sair'>
+                <a href="/" className='logout' title='Sair'>
                     <i className='material-icons'>logout</i>
                 </a>
             </div>
