@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
             </div>
 
             <Options>
-                <Item isActive={(useLocation().pathname == '/notifications') ? true : false}>
+                <Item isActive={(useLocation().pathname == '/notification') ? true : false}>
                     <a href="/notification" title='Notificações'>
                         <i className='material-icons'>notifications</i>
                     </a>
@@ -39,7 +39,7 @@ const Navbar: React.FC = () => {
                         <i className='material-icons'>add_location_alt</i>
                     </a>
                 </Item>
-                <Item isActive={(useLocation().pathname == '/analytics') ? true : false}>
+                <Item isActive={(useLocation().pathname == '/analytic') ? true : false}>
                     <a href="/analytic" title='Analise'>
                         <i className='material-icons'>stacked_bar_chart</i>
                     </a>
