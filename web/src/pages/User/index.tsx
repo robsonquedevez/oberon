@@ -114,7 +114,7 @@ const User: React.FC = () => {
                         </div>
 
                         <div>
-                            <Input label='Função' icon='person' type='text' />
+                            <Input label='Função' icon='badge' type='text' />
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>

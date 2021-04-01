@@ -19,9 +19,9 @@ const Navbar: React.FC = () => {
             </div>
 
             <Options>
-                <Item isActive={(useLocation().pathname == '/notification') ? true : false}>
-                    <a href="/notification" title='Notificações'>
-                        <i className='material-icons'>notifications</i>
+                <Item isActive={(useLocation().pathname == '/enterprise') ? true : false}>
+                    <a href="/enterprise" title='Empresa'>
+                        <i className='material-icons'>apartment</i>
                     </a>
                 </Item>
                 <Item isActive={(useLocation().pathname == '/user') ? true : false}>
