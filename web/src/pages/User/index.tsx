@@ -109,12 +109,12 @@ const User: React.FC = () => {
                         <div className='row'>
                             <div className='input-field' style={{ display: 'flex', alignItems: 'center' }}>
                                 <Input label='Nome' icon='person' type='text' />
-                                <Input label='E-mail' icon='mail' type='text' />
+                                <Input label='Função' icon='badge' type='text' />
                             </div>
                         </div>
 
-                        <div>
-                            <Input label='Função' icon='badge' type='text' />
+                        <div>                           
+                            <Input label='E-mail' icon='mail' type='text' />
                         </div>
 
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around' }}>
