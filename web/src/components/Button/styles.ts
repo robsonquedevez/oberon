@@ -5,6 +5,6 @@ export const Container = styled.button`
     justify-content: center;
 
     span {
-        margin-left: 1rem;
+        margin-right: 1rem;
     }
 `;

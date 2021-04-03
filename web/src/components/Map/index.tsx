@@ -16,6 +16,7 @@ const Map: React.FC = () => {
                 scrollWheelZoom={true}
                 style={{ width: '100%', height: '100%' }}
                 zoomControl={false}
+
             >
                 <TileLayer
                     attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

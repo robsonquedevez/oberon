@@ -12,17 +12,16 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const Button: React.FC<ButtonProps> = ({ label, isLoading = false, icon, color, circle, ...props }) => {
     const stylesButton = 'btn waver-effect btn-large waves-light ' + (circle ? ' btn-floating ' : ' ') + (color ? ' ' + color : ' ');
-    // const styles = (circle ? ' btn-floating btn-large' : ' ') + (color ? color : ' ') +' waves-effect waves-light btn';
 
     return (
         <Container className={stylesButton} { ...props} >
             {
-                icon && 
-                <i className='material-icons'>{icon}</i>
-            }
-            {
                 label &&
                 <span>{label}</span>
+            }
+            {
+                icon && 
+                <i className='material-icons'>{icon}</i>
             }
         </Container>
     );
