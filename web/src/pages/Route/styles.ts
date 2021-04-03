@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const Container = styled.div`
     width: 100vw;
@@ -54,3 +54,55 @@ export const BtnAction = styled.div`
         }
     }
 `;
+
+export const Search = styled.div`
+    position: absolute;
+    top: 10px;
+    left: 100px;
+    z-index: 999;
+    width: 40rem;
+
+    div {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        button {
+            margin-left: 20px;
+        }
+
+    }
+`;
+
+interface RouteLocationProps {
+    isFocus?: boolean;
+}
+
+export const RouteLocation = styled.div<RouteLocationProps>`
+    position: absolute;
+    top: 10px;
+    left: 100px;
+    z-index: 999;
+    width: 40rem;
+    opacity: 0.3;
+
+    ${props => props.isFocus &&
+        css`
+            opacity: 1;
+        `
+    }
+`;
+
+
+export const BtnClose = styled.div`
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    transition: color 0.3s;
+
+    &:hover {
+        color: red;
+    }
+`;
+
