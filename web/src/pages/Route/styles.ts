@@ -93,15 +93,6 @@ export const RouteLocation = styled.div<RouteLocationProps>`
     }
 `;
 
-export const Quadrant = styled.div`
-    position: absolute;
-    top: 10px;
-    left: 100px;
-    z-index: 999;
-    width: 40rem;
-`;
-
-
 export const BtnClose = styled.div`
     position: absolute;
     top: 10px;

@@ -8,12 +8,13 @@ import Map from '../../components/Map';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 
+import Quadrant from './components/Quadrant';
+
 import { 
     Container, 
     BtnAction, 
     Search, 
     RouteLocation, 
-    Quadrant,
     BtnClose 
 } from './styles';
 
@@ -188,15 +189,8 @@ const Route: React.FC = () => {
 
             {
                 openQuadrant &&
-
-                <Quadrant className='card'>
-                    <div className='card-content'>
-                        <BtnClose onClick={() => setOpenQuadrant(false)}>
-                            <i className='material-icons'>close</i>
-                        </BtnClose>
-                        <h6>Selecione no mínimo tres pontos no mapa para construir uma área delimitada.</h6>                       
-                    </div>
-                </Quadrant>
+                <Quadrant  onClose={() => setOpenQuadrant(false)} />
+                
             }
 
             
