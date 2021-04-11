@@ -1,36 +1,12 @@
 
 import 'leaflet/dist/leaflet.css';
-import React, { useState } from 'react';
-import { MapContainer, TileLayer, useMapEvents, Marker } from 'react-leaflet';
+import React from 'react';
+import { MapContainer, TileLayer } from 'react-leaflet';
 import L from 'leaflet';
 
 import { Container } from './styles';
 
-import marker from '../../assets/marker.svg';
-
-const markerIcon = L.icon({
-    iconUrl: marker,
-    iconSize: [58, 58],
-})
-
-const AddMarker: React.FC = () => {
-    const  [position, setPosition] = useState<any>(null);
-
-    useMapEvents({
-        click: (e) => {
-            setPosition(L.latLng(e.latlng));
-            console.log(e);
-        }
-    });
-
-    return position === null ? null :
-    <Marker
-        position={position}
-        icon={markerIcon}
-    />
-};
-
-const Map: React.FC = () => {
+const Map: React.FC = ({ children }) => {
     const initialCoords = L.latLng(-22.7599758, -47.7007174)  
     
     return (
@@ -49,7 +25,7 @@ const Map: React.FC = () => {
                 />
 
                 {
-                   <AddMarker />
+                  children
                 }
             </MapContainer>
         </Container>
