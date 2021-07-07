@@ -1,10 +1,11 @@
 import 'reflect-metadata';
 import 'dotenv/config';
-import express, { Request, Response, NextFunction, json } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import routes from './routes';
 import AppErrors from './utils/errors/AppErrors';
 import log from './utils/log/LogsManager';
+import './utils/database/Typeorm';
 
 const app = express();
 
