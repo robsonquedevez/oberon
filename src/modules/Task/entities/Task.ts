@@ -6,7 +6,7 @@ class Task {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column('interger')
+    @Column('integer')
     type: number;
 
     @Column()
