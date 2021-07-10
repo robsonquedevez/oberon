@@ -33,9 +33,10 @@ export class CreateUser1625613520841 implements MigrationInterface {
                         default: false
                     },
                     {
-                        name: 'entreprise',
-                        type: 'numeric',
-                        isNullable: true
+                        name: 'enterprise',
+                        type: 'varchar',
+                        isNullable: true,
+                        default: null
                     },
                     {
                         name: 'created_at',

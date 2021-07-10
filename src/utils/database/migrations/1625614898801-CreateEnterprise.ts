@@ -9,7 +9,7 @@ export class CreateEnterprise1625614898801 implements MigrationInterface {
                 columns: [
                     {
                         name: 'cnpj',
-                        type: 'numeric',
+                        type: 'varchar',
                         isPrimary: true,
                         isUnique: true
                     },
@@ -43,7 +43,7 @@ export class CreateEnterprise1625614898801 implements MigrationInterface {
                     },
                     {
                         name: 'zip_code',
-                        type: 'integer'
+                        type: 'varchar'
                     },
                     {
                         name: 'created_at',
