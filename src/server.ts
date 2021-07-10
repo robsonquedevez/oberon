@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import 'dotenv/config';
+import 'express-async-errors';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import routes from './routes';
@@ -37,4 +38,6 @@ app.use((
     });
 });
 
-app.listen(4004);
+app.listen(4004, () => {
+    console.log('running...')
+});
