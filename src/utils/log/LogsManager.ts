@@ -10,7 +10,7 @@ class LogsManager {
             msg+"\n",
             {
                 encoding: 'utf-8',
-                flag: 'w+'
+                flag: 'a+'
             }
         );
     }
