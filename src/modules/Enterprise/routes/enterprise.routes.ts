@@ -1,6 +1,11 @@
 import { Router } from "express";
+import EnterpriseController from "../controllers/EnterpriseController";
+
+const enterpriseController = new EnterpriseController();
 
 const enterpriseRouter = Router();
+
+enterpriseRouter.post('/', enterpriseController.create);
 
 enterpriseRouter.get('/', (request, response) => {
 

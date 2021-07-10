@@ -4,7 +4,7 @@ import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } fro
 class Enterprise {
 
     @PrimaryColumn()
-    cnpj: number;
+    cnpj: string;
 
     @Column()
     name: string;
