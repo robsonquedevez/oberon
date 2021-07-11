@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
-import CreateUserService from '../services/CreateUserService';
 import User from '../entities/User';
 import AppErrors from '../../../utils/errors/AppErrors';
+
+import CreateUserService from '../services/CreateUserService';
+import ListProfileService from '../services/ListProfileService';
 
 class UserController {
 
     public async create( request: Request, response: Response ): Promise<Response> {
-
         const {
             name,
             email,
@@ -35,6 +36,19 @@ class UserController {
         } as User);
 
         return response.status(201).send();
+    }
+
+    public async findById(request: Request, response: Response): Promise <Response> {
+
+        const { id } = request.body;
+
+        const listProfile = new ListProfileService();
+
+        const user = await listProfile.execute(id);
+
+        delete user.password;
+
+        return response.status(201).json({ user });
     }
 }
 
