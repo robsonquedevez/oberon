@@ -2,6 +2,7 @@ import { getRepository } from 'typeorm';
 import AppErrors from '../../../utils/errors/AppErrors';
 import User from '../entities/User';
 import Enterprise from '../../Enterprise/entities/Enterprise';
+import hash from '../../../utils/hash/HashProvider';
 
 class CreateUserService {
 
@@ -36,6 +37,8 @@ class CreateUserService {
                 400
             );
         }
+
+        user.password = await hash.generateHash({ payload: user.password });
 
         const newUser = userRepository.create(user);
 
