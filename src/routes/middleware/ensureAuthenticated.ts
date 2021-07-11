@@ -31,7 +31,11 @@ export default function ensureAuthenticated(
 
         const { sub } = decoded as ITokenPayload;
 
-        next();
+        request.user = {
+            id: sub
+        }
+
+        return next();
     } catch (error) {
         throw new AppErrors(
             'Token inválido, acesse novamente!',

@@ -40,7 +40,7 @@ class UserController {
 
     public async findById(request: Request, response: Response): Promise <Response> {
 
-        const { id } = request.body;
+        const { id } = request.user;
 
         const listProfile = new ListProfileService();
 
