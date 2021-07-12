@@ -19,7 +19,7 @@ export default function ensureAuthenticated(
 
     if(!authHeader) {
         throw new AppErrors(
-            'Token não encontrado, acesse novamente!', 
+            'Token não encontrado', 
             401
         );
     }
@@ -38,7 +38,7 @@ export default function ensureAuthenticated(
         return next();
     } catch (error) {
         throw new AppErrors(
-            'Token inválido, acesse novamente!',
+            'Token inválido',
             401
         );
     }
