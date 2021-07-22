@@ -24,7 +24,7 @@ export class CreateTask1625615664918 implements MigrationInterface {
                     },
                     {
                         name: 'enterprise',
-                        type: 'numeric'
+                        type: 'varchar'
                     },
                     {
                         name: 'executing_user',
@@ -48,7 +48,9 @@ export class CreateTask1625615664918 implements MigrationInterface {
                     },
                     {
                         name: 'days_of_the_week',
-                        type: 'varchar'
+                        type: 'varchar',
+                        isNullable: true
+                        
                     },
                     {
                         name: 'finished',
