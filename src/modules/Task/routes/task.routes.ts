@@ -1,10 +1,11 @@
 import { Router } from 'express';
+import ensureAuthenticated from '../../../routes/middleware/ensureAuthenticated';
+import TaskRoundController from '../controllers/TaskRoundController';
+
+const taskRoundController = new TaskRoundController();
 
 const taskRouter = Router();
 
-taskRouter.get('/', (request, response) => {
-
-    response.status(200).json({ ok: true });
-});
+taskRouter.post('/round', ensureAuthenticated, taskRoundController.create);
 
 export default taskRouter;
