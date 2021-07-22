@@ -16,7 +16,7 @@ class Task {
     enterprise: string;
 
     @Column()
-    executing_task: string;
+    executing_user: string;
 
     @Column('integer')
     status_task: number;
