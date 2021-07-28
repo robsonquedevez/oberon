@@ -2,7 +2,7 @@ import { getRepository } from 'typeorm';
 import { isBefore, isAfter } from 'date-fns';
 import Task from '../entities/Task';
 import verifyToTaskAlreadyExists from './VerifyToTaskAlreadyExists';
-import AppErros from '../../../utils/errors/AppErrors';
+import AppErrors from '../../../utils/errors/AppErrors';
 
 interface ITask {
     type: number;
@@ -17,7 +17,7 @@ interface ITask {
     finished: boolean;
 }
 
-class CreateRoundTaskService {
+class CreateTaskService {
 
     public async execute({
         type,
@@ -37,7 +37,7 @@ class CreateRoundTaskService {
         const checkedStartDateTask = isBefore(new Date(start_task), new Date());
 
         if(checkedStartDateTask) {
-            throw new AppErros(
+            throw new AppErrors(
                 'Data de início da tarefa é menor que a data atual',
                 400
             );
@@ -46,7 +46,7 @@ class CreateRoundTaskService {
         const checkedStartDateGreaterThanEnd = isAfter(new Date(start_task), new Date(end_task));
 
         if(checkedStartDateGreaterThanEnd) {
-            throw new AppErros(
+            throw new AppErrors(
                 'Data de inícial maior que data final',
                 400
             );
@@ -72,9 +72,8 @@ class CreateRoundTaskService {
             days_of_the_week,
             finished
         });        
-        
         return await taskRepository.save(task);
     }
 }   
 
-export default CreateRoundTaskService;
+export default CreateTaskService;

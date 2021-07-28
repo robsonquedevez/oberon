@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import CreateRoundTaskService from '../services/CreateRoundTaskService';
+import CreateTaskService from '../services/CreateTaskService';
 
-class TaskRoundController {
+class TaskController {
 
     public async create(request: Request, response: Response): Promise<Response> {
 
@@ -9,7 +9,6 @@ class TaskRoundController {
 
         const {  
             type,
-            created_user, 
             enterprise,
             executing_user,
             status_task,
@@ -19,11 +18,11 @@ class TaskRoundController {
             days_of_the_week,
             finished } = request.body;
 
-        const createRoundTask = new CreateRoundTaskService();
+        const createTask = new CreateTaskService();
 
-        const task = await createRoundTask.execute({
+        const task = await createTask.execute({
             type,
-            created_user, 
+            created_user: user.id, 
             enterprise,
             executing_user,
             status_task,
@@ -36,7 +35,6 @@ class TaskRoundController {
 
         return response.status(201).json(task);
     }
-
 }
 
-export default TaskRoundController;
+export default TaskController;

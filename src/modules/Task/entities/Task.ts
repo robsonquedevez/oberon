@@ -1,5 +1,7 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
+// Type task: 1 - round, 2 - quadrant
+
 @Entity('tasks')
 class Task {
     
