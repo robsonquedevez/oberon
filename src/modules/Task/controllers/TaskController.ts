@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import CreateTaskService from '../services/CreateTaskService';
 import UpdateTaskService from '../services/UpdateTaskService';
 import FindTaskToExecuteUserService from '../services/FindTaskToExecuteUserService';
+import FindAllTaskToEnterpriseService from '../services/FindAllTasktoEnterpriseService';
 
 class TaskController {
 
@@ -77,6 +78,17 @@ class TaskController {
         const findTaskToExecuteUser = new FindTaskToExecuteUserService();
 
         const tasks = await findTaskToExecuteUser.execute({ executing_user });
+
+        return response.status(200).json({ tasks });
+    }
+
+    public async findAllTaskToEnterprise(request: Request, response: Response): Promise<Response> {
+
+        const { enterprise } = request.body;
+
+        const findAllTaskToEnterprise = new FindAllTaskToEnterpriseService();
+
+        const tasks = await findAllTaskToEnterprise.execute({ enterprise });
 
         return response.status(200).json({ tasks });
     }
