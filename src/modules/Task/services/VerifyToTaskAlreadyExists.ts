@@ -23,6 +23,8 @@ interface IVerifyToTaskAlreadyExists {
     end_task: Date;
     repeat: boolean;
     days_of_the_week: string;
+    update?: boolean;
+    task_id?: string;
 }
 
 const getHours = (date: Date): string => {
@@ -40,7 +42,6 @@ const getDate = (date: string): string => {
 
 const concatNewDateTime = (date: string, hours: string): Date => {
     const concat = date + ' ' + hours;
-    console.log(concat);
     return new Date(concat);
 }
 
@@ -51,16 +52,17 @@ class VerifyToTaskAlreadyExists {
         start_task, 
         end_task, 
         repeat,
-        days_of_the_week }: IVerifyToTaskAlreadyExists): Promise<void> {
-        
-        console.log('inicio');
+        days_of_the_week,
+        update,
+        task_id
+    }: IVerifyToTaskAlreadyExists): Promise<void> {
 
         const startTasK = addSeconds(new Date(start_task), 1);
         const endTask = subSeconds(new Date(end_task), 1);
 
-        const taskRepository = getRepository(Task);
+        const taskRepository = getRepository(Task);        
 
-        const taskToUser = await taskRepository.find({
+        var taskToUser = await taskRepository.find({
             where: {
                 executing_user,
                 finished: false
@@ -68,8 +70,15 @@ class VerifyToTaskAlreadyExists {
         });
 
         if(taskToUser.length === 0) {
-            console.log('fim');
             return;
+        }
+
+        if(update) {
+            taskToUser = taskToUser.filter(task => task.id !== task_id);
+
+            if(taskToUser.length === 0) {
+                return;
+            }
         }
 
         taskToUser.filter(task => {
@@ -136,7 +145,6 @@ class VerifyToTaskAlreadyExists {
                                         )
                                     )
                                 ) {
-                                    console.log('3');
                                     throw new AppError(
                                         'Conflito de tarefas, já existe uma tarefa para domingo agendada nesse horário',
                                         400
@@ -174,7 +182,6 @@ class VerifyToTaskAlreadyExists {
                                         )
                                     )
                                 ) {
-                                    console.log('3');
                                     throw new AppError(
                                         'Conflito de tarefas, já existe uma tarefa para segunda-feira agendada nesse horário',
                                         400
@@ -212,7 +219,6 @@ class VerifyToTaskAlreadyExists {
                                         )
                                     )
                                 ) {
-                                    console.log('3');
                                     throw new AppError(
                                         'Conflito de tarefas, já existe uma tarefa para terça-feira agendada nesse horário',
                                         400
@@ -250,7 +256,6 @@ class VerifyToTaskAlreadyExists {
                                         )
                                     )
                                 ) {
-                                    console.log('3');
                                     throw new AppError(
                                         'Conflito de tarefas, já existe uma tarefa para quarta-feira agendada nesse horário',
                                         400
@@ -288,7 +293,6 @@ class VerifyToTaskAlreadyExists {
                                         )
                                     )
                                 ) {
-                                    console.log('3');
                                     throw new AppError(
                                         'Conflito de tarefas, já existe uma tarefa para quinta-feira agendada nesse horário',
                                         400
@@ -326,7 +330,6 @@ class VerifyToTaskAlreadyExists {
                                         )
                                     )
                                 ) {
-                                    console.log('3');
                                     throw new AppError(
                                         'Conflito de tarefas, já existe uma tarefa para sexta-feira agendada nesse horário',
                                         400
@@ -364,21 +367,17 @@ class VerifyToTaskAlreadyExists {
                                         )
                                     )
                                 ) {
-                                    console.log('3');
                                     throw new AppError(
                                         'Conflito de tarefas, já existe uma tarefa para sábado agendada nesse horário',
                                         400
                                     );
                                 }
-                            }
-
-                            
+                            }                            
                         });
                     });
                 });
             }
         }
-        console.log('fim');
         return;
     }
 }
