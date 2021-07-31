@@ -6,6 +6,8 @@ const taskController = new TaskController();
 
 const taskRouter = Router();
 
-taskRouter.post('/round', ensureAuthenticated, taskController.create);
+taskRouter.post('/', ensureAuthenticated, taskController.create);
+taskRouter.put('/', ensureAuthenticated, taskController.update);
+taskRouter.get('/', ensureAuthenticated, taskController.findTaskToExecuteUser);
 
 export default taskRouter;
