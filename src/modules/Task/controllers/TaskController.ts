@@ -19,7 +19,8 @@ class TaskController {
             end_task,
             repeat,
             days_of_the_week,
-            finished
+            finished,
+            coordinates
         } = request.body;
 
         const createTask = new CreateTaskService();
@@ -34,7 +35,8 @@ class TaskController {
             end_task,
             repeat,
             days_of_the_week,
-            finished 
+            finished,
+            coordinates
         });
 
         return response.status(201).json(task);

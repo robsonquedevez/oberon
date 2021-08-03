@@ -89,8 +89,8 @@ class UpdateTaskService {
 
         task.executing_user = executing_user;
         task.status_task = status_task;
-        task.start_date = start_task;
-        task.end_date = end_task;
+        task.start_task = start_task;
+        task.end_task = end_task;
         task.repeat = repeat;
         task.days_of_the_week = days_of_the_week;
         task.finished = finished;

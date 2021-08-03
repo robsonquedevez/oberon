@@ -1,8 +1,14 @@
-import { getRepository } from 'typeorm';
+import { getRepository, getMongoRepository} from 'typeorm';
 import { isBefore, isAfter } from 'date-fns';
 import Task from '../entities/Task';
 import verifyToTaskAlreadyExists from './VerifyToTaskAlreadyExists';
 import AppErrors from '../../../utils/errors/AppErrors';
+import Coordinate from '../schemas/Coordinate';
+
+interface LngLat {
+    lng: string;
+    lat: string;
+}
 
 interface ITask {
     type: number;
@@ -15,6 +21,7 @@ interface ITask {
     repeat: boolean;
     days_of_the_week: string;
     finished: boolean;
+    coordinates: LngLat[];
 }
 
 class CreateTaskService {
@@ -29,8 +36,9 @@ class CreateTaskService {
         end_task,
         repeat,
         days_of_the_week,
-        finished
-    }: ITask): Promise<Task> {
+        finished,
+        coordinates
+    }: ITask): Promise<ITask> {
         
         const taskRepository = getRepository(Task);
 
@@ -66,13 +74,25 @@ class CreateTaskService {
             enterprise,
             executing_user,
             status_task,
-            start_date: start_task,
-            end_date: end_task,
+            start_task,
+            end_task,
             repeat,
             days_of_the_week,
             finished
-        });        
-        return await taskRepository.save(task);
+        });
+        
+        await taskRepository.save(task);
+
+        const coordinatesRepository = getMongoRepository(Coordinate, 'mongo');
+
+        const coordinatesTask = coordinatesRepository.create({
+            task_id: task.id,
+            coordinates 
+        });
+
+        await coordinatesRepository.save(coordinatesTask);
+
+        return { ...task, coordinates }
     }
 }   
 

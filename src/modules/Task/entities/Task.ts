@@ -24,10 +24,10 @@ class Task {
     status_task: number;
 
     @Column("time with time zone")
-    start_date: Date;
+    start_task: Date;
 
     @Column('time with time zone')
-    end_date: Date;
+    end_task: Date;
 
     @Column('boolean')
     repeat: boolean;

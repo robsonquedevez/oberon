@@ -83,8 +83,8 @@ class VerifyToTaskAlreadyExists {
 
         taskToUser.filter(task => {
 
-            const taskStartDate = new Date(task.start_date);
-            const taskEndDate = new Date(task.end_date);            
+            const taskStartDate = new Date(task.start_task);
+            const taskEndDate = new Date(task.end_task);            
 
             if(
                 (isAfter(startTasK, taskStartDate) && isBefore(startTasK, taskEndDate))
@@ -124,24 +124,24 @@ class VerifyToTaskAlreadyExists {
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(sunday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(sunday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(sunday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(sunday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(sunday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(sunday), getHours(task.end_task))
                                         )
                                     )
                                     ||                                    
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(sunday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(sunday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(sunday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(sunday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(sunday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(sunday), getHours(task.end_task))
                                         )
                                     )
                                 ) {
@@ -161,24 +161,24 @@ class VerifyToTaskAlreadyExists {
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(monday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(monday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(monday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(monday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(monday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(monday), getHours(task.end_task))
                                         )
                                     )
                                     ||                                    
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(monday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(monday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(monday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(monday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(monday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(monday), getHours(task.end_task))
                                         )
                                     )
                                 ) {
@@ -198,24 +198,24 @@ class VerifyToTaskAlreadyExists {
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(tuesday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(tuesday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(tuesday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(tuesday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(tuesday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(tuesday), getHours(task.end_task))
                                         )
                                     )
                                     ||                                    
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(tuesday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(tuesday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(tuesday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(tuesday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(tuesday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(tuesday), getHours(task.end_task))
                                         )
                                     )
                                 ) {
@@ -235,24 +235,24 @@ class VerifyToTaskAlreadyExists {
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(wednesday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(wednesday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(wednesday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(wednesday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(wednesday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(wednesday), getHours(task.end_task))
                                         )
                                     )
                                     ||                                    
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(wednesday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(wednesday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(wednesday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(wednesday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(wednesday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(wednesday), getHours(task.end_task))
                                         )
                                     )
                                 ) {
@@ -272,24 +272,24 @@ class VerifyToTaskAlreadyExists {
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(thursday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(thursday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(thursday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(thursday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(thursday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(thursday), getHours(task.end_task))
                                         )
                                     )
                                     ||                                    
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(thursday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(thursday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(thursday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(thursday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(thursday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(thursday), getHours(task.end_task))
                                         )
                                     )
                                 ) {
@@ -309,24 +309,24 @@ class VerifyToTaskAlreadyExists {
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(friday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(friday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(friday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(friday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(friday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(friday), getHours(task.end_task))
                                         )
                                     )
                                     ||                                    
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(friday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(friday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(friday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(friday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(friday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(friday), getHours(task.end_task))
                                         )
                                     )
                                 ) {
@@ -346,24 +346,24 @@ class VerifyToTaskAlreadyExists {
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(saturday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(saturday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(saturday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(saturday), getHours(startTasK)), 
-                                            concatNewDateTime(getDate(saturday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(saturday), getHours(task.end_task))
                                         )
                                     )
                                     ||                                    
                                     (  
                                         isAfter(
                                             concatNewDateTime(getDate(saturday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(saturday), getHours(task.start_date))
+                                            concatNewDateTime(getDate(saturday), getHours(task.start_task))
                                         ) 
                                         && 
                                         isBefore(
                                             concatNewDateTime(getDate(saturday), getHours(endTask)), 
-                                            concatNewDateTime(getDate(saturday), getHours(task.end_date))
+                                            concatNewDateTime(getDate(saturday), getHours(task.end_task))
                                         )
                                     )
                                 ) {
