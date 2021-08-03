@@ -35,11 +35,11 @@ export class CreateTask1625615664918 implements MigrationInterface {
                         type: 'integer'
                     },
                     {
-                        name: 'start_date',
+                        name: 'start_task',
                         type: 'timestamp with time zone'
                     },
                     {
-                        name: 'end_date',
+                        name: 'end_task',
                         type: 'timestamp with time zone'
                     },
                     {
