@@ -5,11 +5,11 @@ class CoordinateController {
 
     public async findCoordinateToTask(request: Request, response: Response): Promise<Response> {       
 
-        const { task } = request.body;
+        const { task } = request.query;
 
         const findCoordinates = new FindCoordinatesService();
 
-        const coords = await findCoordinates.execute(task);
+        const coords = await findCoordinates.execute(String(task));
 
         return response.status(200).json({ coords });
     }
