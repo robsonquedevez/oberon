@@ -11,11 +11,11 @@ class Coordinate {
     @ObjectIdColumn()
     id: ObjectID;
 
-    @Column('uuid')
-    task_id: string;
+    @Column()
+    task: string;
 
-    @Column('array')
-    coordinates: Array<LngLat>;
+    @Column()
+    coordinates: LngLat[];
 }
 
 export default Coordinate;
