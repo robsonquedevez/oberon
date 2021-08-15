@@ -86,7 +86,7 @@ class CreateTaskService {
         const coordinatesRepository = getMongoRepository(Coordinate, 'mongo');
 
         const coordinatesTask = coordinatesRepository.create({
-            task_id: task.id,
+            task: task.id,
             coordinates 
         });
 
