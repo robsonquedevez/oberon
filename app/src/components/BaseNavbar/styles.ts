@@ -9,7 +9,6 @@ export const ContentLogo = styled.div`
         font-weight: 400;
         font-size: 1.8rem;
         font-family: 'Saira', sans-serif;
-        margin-left: 0.7rem;
     }
 `;
 
@@ -29,10 +28,12 @@ export const UserLogin = styled.div`
         margin-right: 1.2rem;
         p {
             font-size: 11pt;
+            font-family: 'Roboto', sans-serif;
         }
         
         p + p {
             font-size: 10pt;
+            font-family: 'Roboto', sans-serif;
         }
     }
 `;

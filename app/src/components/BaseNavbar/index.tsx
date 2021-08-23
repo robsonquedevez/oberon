@@ -35,7 +35,7 @@ import {
 const drawerWidth = 240;
 const useStyles = makeStyles((theme) => ({
     root: {
-      display: 'flex',
+        display: 'flex',
     },
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
@@ -52,6 +52,46 @@ const useStyles = makeStyles((theme) => ({
             duration: theme.transitions.duration.enteringScreen,
         }),
     },
+        menuButton: {
+        marginRight: 36,
+    },
+        hide: {
+        display: 'none',
+    },
+    drawer: {
+        width: drawerWidth,
+        flexShrink: 0,
+        whiteSpace: 'nowrap',
+    },
+    drawerOpen: {
+    width: drawerWidth,
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    },
+    drawerClose: {
+        transition: theme.transitions.create('width', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+    }),
+        overflowX: 'hidden',
+        width: theme.spacing(7) + 1,
+        [theme.breakpoints.up('sm')]: {
+            width: theme.spacing(9) + 1,
+    },
+    },
+        toolbar: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        padding: theme.spacing(0, 1),
+        ...theme.mixins.toolbar,
+    },
+        content: {
+        flexGrow: 1,
+        padding: theme.spacing(3),
+    },
     toolBar: {
         display: 'flex',
         justifyContent: 'space-between'
@@ -61,73 +101,11 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'space-between',
         alignItems: 'center'
     },
-    drawerPaper: {
-        position: 'absolute',
-        whiteSpace: 'nowrap',
-        width: drawerWidth,
-        height: '100%',
-        transition: theme.transitions.create('width', {
-          easing: theme.transitions.easing.sharp,
-          duration: theme.transitions.duration.enteringScreen,
-        }),
-    },
-    drawerPaperClose: {
-      overflowX: 'hidden',
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      width: theme.spacing(7),
-      [theme.breakpoints.up('sm')]: {
-        width: theme.spacing(9),
-      },
-    },
-    toolbarIcon: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        padding: '0 8px',
-        ...theme.mixins.toolbar,
-    },
     active: {
         color: '#074583',
         fontWeight: 'bold',
         borderLeft: '5px solid #074583',
         backgroundColor: '#D6E0EB',
-    },
-    toolbar: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-      padding: theme.spacing(0, 1),
-      ...theme.mixins.toolbar,
-    },
-    drawerOpen: {
-      width: drawerWidth,
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.enteringScreen,
-      }),
-    },
-    drawerClose: {
-      transition: theme.transitions.create('width', {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      overflowX: 'hidden',
-      width: theme.spacing(7) + 1,
-      [theme.breakpoints.up('sm')]: {
-        width: theme.spacing(9) + 1,
-      },
-    },
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-      whiteSpace: 'nowrap',
-    },
-    content: {
-      flexGrow: 1,
-      padding: theme.spacing(3),
     },
 }));
 
@@ -220,7 +198,7 @@ const BaseNavbar: React.FC<NavBarProps> = ({ pageActive, children }) => {
                 onClick={() => handlePushPage('home')}
             >
                 <ListItemIcon>
-                <Home />
+                    <Home />
                 </ListItemIcon>
                 <ListItemText primary="Home" />
             </ListItem>
@@ -232,7 +210,7 @@ const BaseNavbar: React.FC<NavBarProps> = ({ pageActive, children }) => {
                 onClick={() => handlePushPage('enterprise')}
             >
                 <ListItemIcon>
-                <Business />
+                    <Business />
                 </ListItemIcon>
                 <ListItemText primary="Empresa" />
             </ListItem>
@@ -244,7 +222,7 @@ const BaseNavbar: React.FC<NavBarProps> = ({ pageActive, children }) => {
                 onClick={() => handlePushPage('user')}
             >
                 <ListItemIcon>
-                <PersonAdd />
+                    <PersonAdd />
                 </ListItemIcon>
                 <ListItemText primary="Usuário" />
             </ListItem>
@@ -256,7 +234,7 @@ const BaseNavbar: React.FC<NavBarProps> = ({ pageActive, children }) => {
                 onClick={() => handlePushPage('route')}
             >
                 <ListItemIcon>
-                <Room />
+                    <Room />
                 </ListItemIcon>
                 <ListItemText primary="Rota" />
             </ListItem>
@@ -268,7 +246,7 @@ const BaseNavbar: React.FC<NavBarProps> = ({ pageActive, children }) => {
                 onClick={() => handlePushPage('analytics')}
             >
                 <ListItemIcon>
-                <BarChart />
+                    <BarChart />
                 </ListItemIcon>
                 <ListItemText primary="Analises" />
             </ListItem>
