@@ -8,7 +8,7 @@ import {
 const Enterprise: React.FC = () => {
 
     return (
-        <BaseNavbar>
+        <BaseNavbar pageActive='enterprise'>
 
             <Container>
                 Entreprise

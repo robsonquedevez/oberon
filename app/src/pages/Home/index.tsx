@@ -8,7 +8,7 @@ import {
 const Home: React.FC = () => {
 
     return (
-        <BaseNavbar>
+        <BaseNavbar pageActive='home'>
 
             <Container>
                 Hello
