@@ -1,8 +1,13 @@
 {
     "type": "postgres",
-    "host": "db_host",
-    "port": 5434,
-    "username": "user",
-    "password": "pass",
-    "database": "db_name"
+    "host": "localhost",
+    "port": 5432,
+    "username": "USERNAME",
+    "password": "PASSWORD",
+    "database": "DATABASE",
+    "entities": ["./src/modules/**/entities/*.ts"],
+    "migrations": ["./src/utils/database/migrations/*.ts"],
+    "cli": {
+        "migrationsDir": "./src/utils/database/migrations"
+    }
 }
