@@ -1,19 +1,12 @@
 import React from 'react';
 import BaseNavbar from '../../components/BaseNavbar';
-
-import {    
-    Container
-} from './styles';
+import Map from '../../components/Map';
 
 const Home: React.FC = () => {
 
     return (
-        <BaseNavbar pageActive='home'>
-
-            <Container>
-                Hello
-            </Container>
-
+        <BaseNavbar pageActive='home'>            
+            <Map />
         </BaseNavbar> 
     );
 }
