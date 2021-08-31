@@ -228,14 +228,14 @@ const BaseNavbar: React.FC<NavBarProps> = ({ pageActive, children }) => {
 
             <ListItem 
                 button
-                className={ pageActive === 'route' ?
+                className={ pageActive === 'task' ?
                 clsx(classes.active) : '' } 
-                onClick={() => handlePushPage('route')}
+                onClick={() => handlePushPage('task')}
             >
                 <ListItemIcon>
                     <Room />
                 </ListItemIcon>
-                <ListItemText primary="Rota" />
+                <ListItemText primary="Tarefas" />
             </ListItem>
 
             <ListItem 
@@ -247,7 +247,7 @@ const BaseNavbar: React.FC<NavBarProps> = ({ pageActive, children }) => {
                 <ListItemIcon>
                     <BarChart />
                 </ListItemIcon>
-                <ListItemText primary="Analises" />
+                <ListItemText primary="Análises" />
             </ListItem>
             </Drawer>
             <main className={classes.content}>
