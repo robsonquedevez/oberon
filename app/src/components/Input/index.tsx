@@ -9,9 +9,18 @@ interface InputProps extends InputHTMLAttributes<TextFieldProps> {
     label: string;
     type?: string;
     changeDisable?: boolean;
+    variant?: 'filled' | 'outlined' | 'standard';
+    shrink?: boolean;
 };
 
-const Input: React.FC<InputProps> = ({ name, label, type='text', changeDisable=false }) => {
+const Input: React.FC<InputProps> = ({ 
+        name, 
+        label, 
+        type='text', 
+        changeDisable=false, 
+        variant='outlined',
+        shrink
+}) => {
     const [err, setErr] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const { fieldName, defaultValue, error, registerField } = useField(name);
@@ -28,7 +37,7 @@ const Input: React.FC<InputProps> = ({ name, label, type='text', changeDisable=f
     return (     
         <>   
             <TextField
-                variant='outlined'
+                variant={variant}
                 margin="normal"
                 fullWidth
                 defaultValue={defaultValue}
@@ -37,7 +46,11 @@ const Input: React.FC<InputProps> = ({ name, label, type='text', changeDisable=f
                 error={err}
                 inputRef={inputRef}
                 onFocus={() => { setErr(false) }}
-                disabled={changeDisable}
+                disabled={changeDisable}                
+                InputLabelProps={{
+                    shrink,
+                }}
+                
             />
             {
                 err &&
