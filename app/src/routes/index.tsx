@@ -7,6 +7,7 @@ import Register from '../pages/Register';
 import Home from '../pages/Home';
 import Enterprise from '../pages/Enterprise';
 import User from '../pages/User';
+import Task from '../pages/Task';
 
 const Routes: React.FC = () => {
     return (
@@ -17,6 +18,7 @@ const Routes: React.FC = () => {
             <Route path='/home' component={Home} />
             <Route path='/enterprise' component={Enterprise} />
             <Route path='/user' component={User} />
+            <Route path='/task' component={Task} />
         </Switch>
     )
 }
