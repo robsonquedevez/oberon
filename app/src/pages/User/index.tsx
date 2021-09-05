@@ -21,6 +21,7 @@ import {
     Save,
     Close,
     Mail,
+    Delete
 } from '@material-ui/icons';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
@@ -153,6 +154,27 @@ const User: React.FC = () => {
                             onClick={() => handleOpenEditUser(Number(params.id) - 1)}
                         >
                             <Mail  className={classes.icon} />
+                        </IconButton>
+                    </Tooltip> 
+                )
+            }
+        },
+        {
+            field: 'delete',
+            sortable: false,
+            width: 70,
+            filterable: false,
+            headerName: ' ',
+            disableColumnMenu: true,
+            disableReorder: true,
+            renderCell: ( params ) => {                
+                return (
+                    <Tooltip title='Reenviar e-mail'>
+                        <IconButton 
+                            className={classes.button} 
+                            onClick={() => handleOpenEditUser(Number(params.id) - 1)}
+                        >
+                            <Delete  className={classes.icon} />
                         </IconButton>
                     </Tooltip> 
                 )
