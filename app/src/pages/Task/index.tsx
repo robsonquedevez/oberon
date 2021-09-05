@@ -17,6 +17,7 @@ import {
     FormControl,
     Input as SelectInput,
     MenuItem,
+    Drawer
 } from '@material-ui/core';
 import {
     Add,
@@ -26,6 +27,8 @@ import {
 } from '@material-ui/icons';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
+import { useMapEvents, Marker, Polygon } from '@monsonjeremy/react-leaflet';
+import * as L from 'leaflet';
 
 import BaseNavbar from '../../components/BaseNavbar';
 import Map from '../../components/Map';
@@ -34,6 +37,13 @@ import Input from '../../components/Input';
 import {
     InputGroup,
 } from './styles';
+
+import marker from '../../assets/images/marker.svg';
+
+const markerIcon = L.icon({
+    iconUrl: marker,
+    iconSize: [58, 58],
+});
 
 const useStyles = makeStyles(() => ({
     fabButton: {
@@ -52,8 +62,70 @@ const useStyles = makeStyles(() => ({
         border: 1,
         borderRadius: 10,
         borderColor: '#000000',
+    },
+    drawerCoords: {
+        width: 160,
+    },
+    drawerItemTitle: {
+        marginTop: 64,
     }
+
 }));
+
+interface Coords {
+    lat: number;
+    lng: number;
+}
+
+interface IAddRoom {
+    taskType: string;
+    coordinates: any[];
+    setCoordinates(coords: any[]): void;
+}
+
+const AddRoom: React.FC<IAddRoom> = ({ taskType, coordinates, setCoordinates }: IAddRoom) => {    
+    
+    useMapEvents({
+        click: (e) => {
+            setCoordinates([...coordinates, [e.latlng.lat, e.latlng.lng]]);         
+        }
+    });       
+    
+    if (coordinates.length === 0 || taskType === null) {
+        return null;
+    }
+
+    if(taskType === 'Quadrante' && coordinates.length > 3) {
+       return (
+        <Polygon
+                positions={(coordinates)}
+                pathOptions={{
+                    color: 'purple'
+                }}
+            />
+        )
+    }
+
+    if(coordinates.length > 1) {
+
+       return (
+           coordinates.map(point => (            
+                <Marker
+                    position={point}
+                    icon={markerIcon}
+                />
+                )   
+            )
+        )
+    }
+
+    return (
+        <Marker
+            position={L.latLng(coordinates[0])}
+            icon={markerIcon}
+        />
+    );
+}
 
 const Task: React.FC = () => {
     const classes = useStyles();
@@ -61,7 +133,9 @@ const Task: React.FC = () => {
     const [open, setOpen] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState<boolean>(false);
     const [selectUser, setSelectUser] = useState<string | null>(null);
-    const [selectTaskType, setSelectTaskType] = useState<string | null>(null);
+    const [selectTaskType, setSelectTaskType] = useState<string>();
+    const [coordinates, setCoordinates] = useState<any[]>();
+    const [openDrawerCoords, setOpenDrawerCoords] = useState<boolean>(false);
 
     const handleOpenDialogTask= useCallback(() => {
         setOpen(!open);
@@ -75,9 +149,28 @@ const Task: React.FC = () => {
         setSelectTaskType(event.target.value as string);
     }, []);
 
+    const handleOpenDrawerCoords = useCallback(() => {
+        setOpen(!open);
+        setOpenDrawerCoords(!openDrawerCoords);
+    }, [open, openDrawerCoords]);
+
+    const handleSetCoordinates = useCallback(() => {
+
+       
+        
+    }, []);
+
     return (
         <BaseNavbar pageActive='task'>            
-            <Map>
+            <Map
+                
+            >
+                <AddRoom
+                    taskType={selectTaskType}                    
+                    coordinates
+                    setCoordinates
+                />
+
 
                 <Fab 
                     className={classes.fabButton}
@@ -239,7 +332,7 @@ const Task: React.FC = () => {
                             type='button'
                             className={classes.btnAddRoom}
                             endIcon={ <Room />}
-                            onClick={() => {}}
+                            onClick={handleOpenDrawerCoords}
                         >
                             Adicionar pontos no mapa
                         </Button>
@@ -275,6 +368,17 @@ const Task: React.FC = () => {
 
             </Dialog>
 
+            <Drawer
+                anchor='left'
+                open={openDrawerCoords}
+                onClose={handleOpenDrawerCoords}
+                variant='persistent'
+                className={classes.drawerCoords}
+            >
+                <MenuItem className={classes.drawerItemTitle}>
+                    Coordenadas
+                </MenuItem>
+            </Drawer>
         </BaseNavbar> 
     );
 }
