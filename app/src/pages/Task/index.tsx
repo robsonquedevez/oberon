@@ -29,6 +29,7 @@ import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import { useMapEvents, Marker, Polygon } from '@monsonjeremy/react-leaflet';
 import * as L from 'leaflet';
+import { v4 } from 'uuid';
 
 import BaseNavbar from '../../components/BaseNavbar';
 import Map from '../../components/Map';
@@ -39,10 +40,16 @@ import {
 } from './styles';
 
 import marker from '../../assets/images/marker.svg';
+import QuadMarker from '../../assets/images/quadrantMarker.svg';
 
 const markerIcon = L.icon({
     iconUrl: marker,
     iconSize: [58, 58],
+});
+
+const quadMarkerIcon = L.icon({
+    iconUrl: QuadMarker,
+    iconSize: [18, 18],
 });
 
 const useStyles = makeStyles(() => ({
@@ -77,55 +84,88 @@ interface Coords {
     lng: number;
 }
 
-interface IAddRoom {
-    taskType: string;
-    coordinates: any[];
-    setCoordinates(coords: any[]): void;
+interface ICoordinates {
+    setCoordinates(coords: any): void;
 }
 
-const AddRoom: React.FC<IAddRoom> = ({ taskType, coordinates, setCoordinates }: IAddRoom) => {    
-    
+const AddQuadrant: React.FC = () => {
+    const  [positions, setPositions] = useState<any>([]);
+
     useMapEvents({
         click: (e) => {
-            setCoordinates([...coordinates, [e.latlng.lat, e.latlng.lng]]);         
+            if(positions.length < 20){
+                setPositions([ ...positions, e.latlng ] )
+            }
         }
-    });       
-    
-    if (coordinates.length === 0 || taskType === null) {
-        return null;
-    }
+    });
 
-    if(taskType === 'Quadrante' && coordinates.length > 3) {
-       return (
-        <Polygon
-                positions={(coordinates)}
+    return (positions.length === 0) ? 
+        null 
+    :
+        ( 
+            (positions.length < 3) ?
+                positions.map((element: L.LatLngLiteral) => (     
+                    <Marker
+                        key={v4()}
+                        position={L.latLng(element)}
+                        icon={quadMarkerIcon}
+                    />
+                ))
+            :        
+            <Polygon
+                positions={(positions)}
                 pathOptions={{
                     color: 'purple'
                 }}
             />
         )
-    }
-
-    if(coordinates.length > 1) {
-
-       return (
-           coordinates.map(point => (            
-                <Marker
-                    position={point}
-                    icon={markerIcon}
-                />
-                )   
-            )
-        )
-    }
-
-    return (
-        <Marker
-            position={L.latLng(coordinates[0])}
-            icon={markerIcon}
-        />
-    );
+    
 }
+
+const AddRonda: React.FC = () => {
+    const  [positions, setPositions] = useState<any>([]);
+
+    useMapEvents({
+        click: (e) => {
+            if(positions.length < 10){
+                setPositions([ ...positions, e.latlng ] )
+            }
+        }
+    });
+
+    return (positions.length === 0) ? 
+        null 
+    :
+    ( 
+        
+        positions.map((element: L.LatLngLiteral) => (     
+            <Marker
+                key={v4()}
+                position={L.latLng(element)}
+                icon={quadMarkerIcon}
+            />
+        ))
+        
+    )
+}
+
+const AddMarker: React.FC<ICoordinates> = ({ setCoordinates }) => {
+    
+    const  [position, setPosition] = useState<any>(null);
+
+    useMapEvents({
+        click: (e) => {
+            setPosition(L.latLng(e.latlng));
+            setCoordinates([ e.latlng.lat, e.latlng.lng ]);
+        }
+    });
+
+    return position === null ? null :
+    <Marker
+        position={position}
+        icon={markerIcon}
+    />
+};
 
 const Task: React.FC = () => {
     const classes = useStyles();
@@ -133,8 +173,8 @@ const Task: React.FC = () => {
     const [open, setOpen] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState<boolean>(false);
     const [selectUser, setSelectUser] = useState<string | null>(null);
-    const [selectTaskType, setSelectTaskType] = useState<string>();
-    const [coordinates, setCoordinates] = useState<any[]>();
+    const [selectTaskType, setSelectTaskType] = useState<string | null>(null);
+    const [coordinates, setCoordinates] = useState<L.LatLng | null>(null);
     const [openDrawerCoords, setOpenDrawerCoords] = useState<boolean>(false);
 
     const handleOpenDialogTask= useCallback(() => {
@@ -154,9 +194,7 @@ const Task: React.FC = () => {
         setOpenDrawerCoords(!openDrawerCoords);
     }, [open, openDrawerCoords]);
 
-    const handleSetCoordinates = useCallback(() => {
-
-       
+    const handleSetCoordinates = useCallback(() => {       
         
     }, []);
 
@@ -165,11 +203,21 @@ const Task: React.FC = () => {
             <Map
                 
             >
-                <AddRoom
-                    taskType={selectTaskType}                    
-                    coordinates
-                    setCoordinates
-                />
+                {
+                    (selectTaskType !== null && selectTaskType === 'Quadrante') &&
+                    <AddQuadrant />
+                }
+
+                {
+                    (selectTaskType !== null && selectTaskType === 'Ronda') &&
+                    <AddRonda />
+                }
+                {
+                    (selectTaskType !== null && selectTaskType === 'Ponto de chegada') &&
+                    <AddMarker 
+                        setCoordinates={setCoordinates}
+                    />
+                }
 
 
                 <Fab 
@@ -368,17 +416,6 @@ const Task: React.FC = () => {
 
             </Dialog>
 
-            <Drawer
-                anchor='left'
-                open={openDrawerCoords}
-                onClose={handleOpenDrawerCoords}
-                variant='persistent'
-                className={classes.drawerCoords}
-            >
-                <MenuItem className={classes.drawerItemTitle}>
-                    Coordenadas
-                </MenuItem>
-            </Drawer>
         </BaseNavbar> 
     );
 }
