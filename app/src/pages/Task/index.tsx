@@ -18,7 +18,8 @@ import {
     Input as SelectInput,
     MenuItem,
     Snackbar,
-    TextField
+    TextField,
+    Tooltip
 } from '@material-ui/core';
 import {
     Add,
@@ -28,17 +29,17 @@ import {
 } from '@material-ui/icons';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
-import { useMapEvents, Marker, Polygon } from '@monsonjeremy/react-leaflet';
+import { useMapEvents, Marker, Polygon, Popup } from '@monsonjeremy/react-leaflet';
 import * as L from 'leaflet';
 import { v4 } from 'uuid';
 
 import BaseNavbar from '../../components/BaseNavbar';
 import Map from '../../components/Map';
-import Input from '../../components/Input';
 
 import {
     InputGroup,
-    SelectedPoints
+    SelectedPoints,
+    PopUpContent
 } from './styles';
 
 import marker from '../../assets/images/marker.svg';
@@ -61,9 +62,6 @@ const useStyles = makeStyles(() => ({
         bottom: 26,
         zIndex: 999,
     },
-    btnAddRoom: {
-        marginTop: 35,
-    },
     selectForm: {
         width: '70%',
     },
@@ -73,6 +71,9 @@ const useStyles = makeStyles(() => ({
     snackColor: {
         backgroundColor: '#FFF',
         color: '#000',
+    },
+    textField: {
+        width: 315,
     }
 }));
 
@@ -82,20 +83,27 @@ interface Coords {
 }
 
 interface ICoordinatesMarker {
-    setCoordinates(coords: any): void;
+    setCoordinates(coords: L.LatLng): void;
 }
 
 interface ICoordinatesRoundQuadrant {
-    setCoordinates(coords: any[]): void;
+    setCoordinates(coords: L.LatLng[]): void;
 }
 
-const AddQuadrant: React.FC = () => {
+function removeMarker(marker: L.LatLng, coordinates: L.LatLng[]) {
+     return coordinates.filter( 
+         position => position.lat !== marker.lat && position.lng !== marker.lng
+    )
+}
+
+const AddQuadrant: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) => {
     const  [positions, setPositions] = useState<any>([]);
 
     useMapEvents({
         click: (e) => {
             if(positions.length < 20){
-                setPositions([ ...positions, e.latlng ] )
+                setPositions([ ...positions, e.latlng ]);
+                setCoordinates([ ...positions, e.latlng ]);
             }
         }
     });
@@ -112,25 +120,26 @@ const AddQuadrant: React.FC = () => {
                         icon={quadMarkerIcon}
                     />
                 ))
-            :        
+            :
             <Polygon
                 positions={(positions)}
                 pathOptions={{
                     color: 'purple'
                 }}
+                
             />
         )
     
 }
 
-const AddRound: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates: setCoordinatesRoundQuadrant }) => {
+const AddRound: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) => {
     const  [positions, setPositions] = useState<any>([]);
 
     useMapEvents({
         click: (e) => {
             if(positions.length < 10){
                 setPositions([ ...positions, e.latlng ] )
-                setCoordinatesRoundQuadrant([ ...positions, e.latlng ] )
+                setCoordinates([ ...positions, e.latlng ] )
             }
         }
     });
@@ -140,33 +149,58 @@ const AddRound: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates: setCoor
     :
     ( 
         
-        positions.map((element: L.LatLngLiteral) => (     
+        positions.map((element: L.LatLng) => (               
             <Marker
                 key={v4()}
                 position={L.latLng(element)}
                 icon={quadMarkerIcon}
-            />
+                
+            >
+                <Popup>
+                    <PopUpContent>
+                    <p>lat: {element.lat}</p>
+                    <p>lng: {element.lng}</p>
+
+                    <Button
+                    color='secondary'
+                    onClick={
+                        () => { 
+                            setPositions(removeMarker(element, positions));
+                            setCoordinates(removeMarker(element, positions));
+                        }
+                    }
+                    >Remover</Button>
+                    </PopUpContent>
+                </Popup>
+            </Marker>
         ))
         
     )
 }
 
-const AddMarker: React.FC<ICoordinatesMarker> = ({ setCoordinates: setCoordinatesMarker }) => {
+const AddMarker: React.FC<ICoordinatesMarker> = ({ setCoordinates }) => {
     
-    const  [position, setPosition] = useState<any>(null);
+    const  [position, setPosition] = useState<L.LatLng | null>(null);
 
     useMapEvents({
         click: (e) => {
             setPosition(L.latLng(e.latlng));
-            setCoordinatesMarker([ e.latlng.lat, e.latlng.lng ]);
+            setCoordinates(L.latLng(e.latlng));
         }
     });
 
-    return position === null ? null :
+    return position === null ? null :  
+        
     <Marker
         position={position}
-        icon={markerIcon}
-    />
+        icon={quadMarkerIcon}      
+    >
+        <Popup>
+            <p>lat: {position.lat}</p>
+            <p>lng: {position.lng}</p>
+        </Popup>
+    </Marker>
+    
 };
 
 const Task: React.FC = () => {
@@ -186,8 +220,20 @@ const Task: React.FC = () => {
     const [taskRepeat, setTaskRepeat] = useState<boolean>(false);
     const [taskWeekDays, setTaskWeekDays] = useState<string[]>([]);
 
+    const handleOpenDialogTask = useCallback(() => {
+        setOpen(!open);
+    }, [open]);
 
-    const handleOpenDialogTask= useCallback(() => {
+    const handleCancelDialogTask = useCallback(() => {
+        setSelectUser(null);
+        setSelectTaskType(null);
+        setTaskTitle('');
+        setStartDate('');
+        setEndDate('');
+        setTaskRepeat(false);
+        setTaskWeekDays([]);
+        setCoordinatesMarker(null);
+        setCoordinatesRoundQuadrant([]);
         setOpen(!open);
     }, [open]);
 
@@ -220,6 +266,16 @@ const Task: React.FC = () => {
         setTaskRepeat(!taskRepeat);
     }, [taskRepeat]);
 
+    const handleWeekDays = useCallback((newDay: string) => {
+
+        if(taskWeekDays.filter(day => day === newDay).length > 0){
+            setTaskWeekDays(taskWeekDays.filter(day => day !== newDay));
+        }else {
+            setTaskWeekDays([...taskWeekDays, newDay]);
+        }        
+
+    }, [taskWeekDays]);
+
     return (
         <BaseNavbar pageActive='task'>            
             <Map
@@ -227,7 +283,9 @@ const Task: React.FC = () => {
             >
                 {
                     (selectTaskType !== null && selectTaskType === 'Quadrante') &&
-                    <AddQuadrant />
+                    <AddQuadrant 
+                        setCoordinates={setCoordinatesRoundQuadrant}
+                    />
                 }
 
                 {
@@ -279,6 +337,7 @@ const Task: React.FC = () => {
                                 type='text'
                                 onChange={handleTitle}
                                 value={taskTitle}
+                                className={classes.textField}
                             />
 
                             <FormControl className={classes.selectForm}>
@@ -336,6 +395,7 @@ const Task: React.FC = () => {
                                 name='start_task'
                                 type='date'
                                 variant='filled'
+                                className={classes.textField}
                                 onChange={handleStartDate}
                                 value={startDate}
                                 InputLabelProps={{
@@ -348,6 +408,7 @@ const Task: React.FC = () => {
                                 name='end_task'
                                 type='date'
                                 variant='filled'
+                                className={classes.textField}
                                 onChange={handleEndDate}
                                 value={endDate}
                                 InputLabelProps={{
@@ -368,53 +429,81 @@ const Task: React.FC = () => {
                         <FormGroup row className={classes.formGroupWeekDays}>
                             <FormControlLabel
                                 control={
-                                    <Checkbox color='primary' />
+                                    <Checkbox 
+                                        color='primary' 
+                                        onChange={() => handleWeekDays('sunday')}  
+                                        checked={taskWeekDays.find( day => day === 'sunday') === 'sunday' ? true : false}
+                                    />
+                                }
+                                label='Domingo'
+                                disabled={!taskRepeat}
+                            />
+                            <FormControlLabel
+                                control={
+                                    <Checkbox 
+                                        color='primary' 
+                                        onChange={() => handleWeekDays('monday')}  
+                                        checked={taskWeekDays.find( day => day === 'monday') === 'monday' ? true : false}
+                                    />
                                 }
                                 label='Segunda'
                                 disabled={!taskRepeat}
                             />
                             <FormControlLabel
                                 control={
-                                    <Checkbox color='primary' />
+                                    <Checkbox 
+                                        color='primary' 
+                                        onChange={() => handleWeekDays('tuesday')}  
+                                        checked={taskWeekDays.find( day => day === 'tuesday') === 'tuesday' ? true : false}
+                                    />
                                 }
                                 label='Terça'
                                 disabled={!taskRepeat}
                             />
                             <FormControlLabel
                                 control={
-                                    <Checkbox color='primary' />
+                                    <Checkbox 
+                                        color='primary' 
+                                        onChange={() => handleWeekDays('wednesday')}  
+                                        checked={taskWeekDays.find( day => day === 'wednesday') === 'wednesday' ? true : false}
+                                    />
                                 }
                                 label='Quarta'
                                 disabled={!taskRepeat}
                             />
                             <FormControlLabel
                                 control={
-                                    <Checkbox color='primary' />
+                                    <Checkbox 
+                                        color='primary' 
+                                        onChange={() => handleWeekDays('thursday')}  
+                                        checked={taskWeekDays.find( day => day === 'thursday') === 'thursday' ? true : false}
+                                    />
                                 }
                                 label='Quinta'
                                 disabled={!taskRepeat}
                             />
                             <FormControlLabel
                                 control={
-                                    <Checkbox color='primary' />
+                                    <Checkbox 
+                                        color='primary' 
+                                        onChange={() => handleWeekDays('friday')}  
+                                        checked={taskWeekDays.find( day => day === 'friday') === 'friday' ? true : false}
+                                    />
                                 }
                                 label='Sexta'
                                 disabled={!taskRepeat}
                             />
                             <FormControlLabel
                                 control={
-                                    <Checkbox color='primary' />
+                                    <Checkbox 
+                                        color='primary' 
+                                        onChange={() => handleWeekDays('saturday')}  
+                                        checked={taskWeekDays.find( day => day === 'saturday') === 'saturday' ? true : false}
+                                    />
                                 }
                                 label='Sábado'
                                 disabled={!taskRepeat}
-                            />
-                            <FormControlLabel
-                                control={
-                                    <Checkbox color='primary' />
-                                }
-                                label='Domingo'
-                                disabled={!taskRepeat}
-                            />
+                            />                            
 
                         </FormGroup>
                         
@@ -424,9 +513,9 @@ const Task: React.FC = () => {
                             variant="outlined"
                             color='primary'
                             type='button'
-                            className={classes.btnAddRoom}
                             endIcon={ <Room />}
                             onClick={handleOpenCoords}
+                            disabled={selectTaskType === null ? true : false}
                         >
                             Adicionar pontos no mapa
                         </Button>
@@ -434,9 +523,21 @@ const Task: React.FC = () => {
                         {
                             selectTaskType === null ? null :
                             selectTaskType === 'Ponto de chegada' ?
-                            <p> {coordinatesMarker} </p>
+                            (
+                                coordinatesMarker === null ? null :
+                                    <Tooltip title="Ver no mapa">
+                                        <h5 onClick={handleOpenCoords} >
+                                            Ponto Selecionado 
+                                        </h5>
+                                    </Tooltip>)
                             :
-                            ( <p> {coordinatesRoundQuadrant.length} Pontos selecionados </p>)
+                            ( 
+                                <Tooltip title="Ver no mapa">
+                                    <h5 onClick={handleOpenCoords} >
+                                        {coordinatesRoundQuadrant.length} Pontos selecionados 
+                                    </h5>
+                                </Tooltip>
+                            )
                         }
                         </SelectedPoints>
 
@@ -448,7 +549,7 @@ const Task: React.FC = () => {
                             color='secondary'
                             type='button'
                             endIcon={ <Close />}
-                            onClick={handleOpenDialogTask}
+                            onClick={handleCancelDialogTask}
                         >
                             Cancelar
                         </Button>
@@ -474,7 +575,7 @@ const Task: React.FC = () => {
             <Snackbar
                 anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
                 open={openCoords}
-                message={taskTitle}
+                message={taskTitle.length > 0 ? taskTitle : 'Nova tarefa'}
                 key={v4()}
                 className={classes.snackColor}
                 action={
