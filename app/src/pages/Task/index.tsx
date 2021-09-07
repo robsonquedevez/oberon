@@ -17,7 +17,8 @@ import {
     FormControl,
     Input as SelectInput,
     MenuItem,
-    Drawer
+    Snackbar,
+    TextField
 } from '@material-ui/core';
 import {
     Add,
@@ -37,6 +38,7 @@ import Input from '../../components/Input';
 
 import {
     InputGroup,
+    SelectedPoints
 } from './styles';
 
 import marker from '../../assets/images/marker.svg';
@@ -66,17 +68,12 @@ const useStyles = makeStyles(() => ({
         width: '70%',
     },
     formGroupWeekDays: {
-        border: 1,
-        borderRadius: 10,
-        borderColor: '#000000',
+        marginTop: 15,
     },
-    drawerCoords: {
-        width: 160,
-    },
-    drawerItemTitle: {
-        marginTop: 64,
+    snackColor: {
+        backgroundColor: '#FFF',
+        color: '#000',
     }
-
 }));
 
 interface Coords {
@@ -84,8 +81,12 @@ interface Coords {
     lng: number;
 }
 
-interface ICoordinates {
+interface ICoordinatesMarker {
     setCoordinates(coords: any): void;
+}
+
+interface ICoordinatesRoundQuadrant {
+    setCoordinates(coords: any[]): void;
 }
 
 const AddQuadrant: React.FC = () => {
@@ -122,13 +123,14 @@ const AddQuadrant: React.FC = () => {
     
 }
 
-const AddRonda: React.FC = () => {
+const AddRound: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates: setCoordinatesRoundQuadrant }) => {
     const  [positions, setPositions] = useState<any>([]);
 
     useMapEvents({
         click: (e) => {
             if(positions.length < 10){
                 setPositions([ ...positions, e.latlng ] )
+                setCoordinatesRoundQuadrant([ ...positions, e.latlng ] )
             }
         }
     });
@@ -149,14 +151,14 @@ const AddRonda: React.FC = () => {
     )
 }
 
-const AddMarker: React.FC<ICoordinates> = ({ setCoordinates }) => {
+const AddMarker: React.FC<ICoordinatesMarker> = ({ setCoordinates: setCoordinatesMarker }) => {
     
     const  [position, setPosition] = useState<any>(null);
 
     useMapEvents({
         click: (e) => {
             setPosition(L.latLng(e.latlng));
-            setCoordinates([ e.latlng.lat, e.latlng.lng ]);
+            setCoordinatesMarker([ e.latlng.lat, e.latlng.lng ]);
         }
     });
 
@@ -172,10 +174,18 @@ const Task: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const [open, setOpen] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState<boolean>(false);
+    const [openCoords, setOpenCoords] = useState<boolean>(false);
+    
+    const [coordinatesMarker, setCoordinatesMarker] = useState<L.LatLng | null>(null);
+    const [coordinatesRoundQuadrant, setCoordinatesRoundQuadrant] = useState<L.LatLng[]>([]);
     const [selectUser, setSelectUser] = useState<string | null>(null);
     const [selectTaskType, setSelectTaskType] = useState<string | null>(null);
-    const [coordinates, setCoordinates] = useState<L.LatLng | null>(null);
-    const [openDrawerCoords, setOpenDrawerCoords] = useState<boolean>(false);
+    const [taskTitle, setTaskTitle] = useState<string>('');
+    const [startDate, setStartDate] = useState<string>('');
+    const [endDate, setEndDate] = useState<string>('');
+    const [taskRepeat, setTaskRepeat] = useState<boolean>(false);
+    const [taskWeekDays, setTaskWeekDays] = useState<string[]>([]);
+
 
     const handleOpenDialogTask= useCallback(() => {
         setOpen(!open);
@@ -189,14 +199,26 @@ const Task: React.FC = () => {
         setSelectTaskType(event.target.value as string);
     }, []);
 
-    const handleOpenDrawerCoords = useCallback(() => {
+    const handleOpenCoords = useCallback(() => {
         setOpen(!open);
-        setOpenDrawerCoords(!openDrawerCoords);
-    }, [open, openDrawerCoords]);
+        setOpenCoords(!openCoords);
+    }, [open, openCoords]);
 
-    const handleSetCoordinates = useCallback(() => {       
-        
+    const handleTitle = useCallback((event) => {
+        setTaskTitle(event.target.value as string);
     }, []);
+
+    const handleStartDate = useCallback((event) => {
+        setStartDate(event.target.value as string);
+    }, []);
+
+    const handleEndDate = useCallback((event) => {
+        setEndDate(event.target.value as string);
+    }, []);
+
+    const handleRepeat = useCallback(() => {
+        setTaskRepeat(!taskRepeat);
+    }, [taskRepeat]);
 
     return (
         <BaseNavbar pageActive='task'>            
@@ -210,12 +232,14 @@ const Task: React.FC = () => {
 
                 {
                     (selectTaskType !== null && selectTaskType === 'Ronda') &&
-                    <AddRonda />
+                    <AddRound 
+                        setCoordinates={setCoordinatesRoundQuadrant}
+                    />
                 }
                 {
                     (selectTaskType !== null && selectTaskType === 'Ponto de chegada') &&
                     <AddMarker 
-                        setCoordinates={setCoordinates}
+                        setCoordinates={setCoordinatesMarker}
                     />
                 }
 
@@ -226,6 +250,7 @@ const Task: React.FC = () => {
                     color='primary' 
                     aria-label="adicionar nova tarefa"
                     onClick={handleOpenDialogTask}
+                    disabled={openCoords}
                 > 
                     <Add />
                     Nova Tarefa
@@ -247,10 +272,13 @@ const Task: React.FC = () => {
 
                         <InputGroup>
 
-                            <Input
+                            <TextField
+                                variant='outlined'
                                 label='Título'
                                 name='tack_title'
                                 type='text'
+                                onChange={handleTitle}
+                                value={taskTitle}
                             />
 
                             <FormControl className={classes.selectForm}>
@@ -303,27 +331,36 @@ const Task: React.FC = () => {
                                 </Select>
                             </FormControl>
 
-                            <Input
+                            <TextField
                                 label='Início'
                                 name='start_task'
                                 type='date'
                                 variant='filled'
-                                shrink={true}                                
+                                onChange={handleStartDate}
+                                value={startDate}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}                              
                             />
 
-                            <Input
+                            <TextField
                                 label='Fim'
                                 name='end_task'
                                 type='date'
                                 variant='filled'
-                                shrink={true}  
+                                onChange={handleEndDate}
+                                value={endDate}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }} 
                             />
 
                         </InputGroup>
 
                         <FormControlLabel
+                            className={classes.formGroupWeekDays}
                             control={
-                                <Switch color='primary' />
+                                <Switch color='primary' onChange={handleRepeat} checked={taskRepeat} />
                             }
                             label='Repetir'
                         />
@@ -334,45 +371,54 @@ const Task: React.FC = () => {
                                     <Checkbox color='primary' />
                                 }
                                 label='Segunda'
+                                disabled={!taskRepeat}
                             />
                             <FormControlLabel
                                 control={
                                     <Checkbox color='primary' />
                                 }
                                 label='Terça'
+                                disabled={!taskRepeat}
                             />
                             <FormControlLabel
                                 control={
                                     <Checkbox color='primary' />
                                 }
                                 label='Quarta'
+                                disabled={!taskRepeat}
                             />
                             <FormControlLabel
                                 control={
                                     <Checkbox color='primary' />
                                 }
                                 label='Quinta'
+                                disabled={!taskRepeat}
                             />
                             <FormControlLabel
                                 control={
                                     <Checkbox color='primary' />
                                 }
                                 label='Sexta'
+                                disabled={!taskRepeat}
                             />
                             <FormControlLabel
                                 control={
                                     <Checkbox color='primary' />
                                 }
                                 label='Sábado'
+                                disabled={!taskRepeat}
                             />
                             <FormControlLabel
                                 control={
                                     <Checkbox color='primary' />
                                 }
                                 label='Domingo'
+                                disabled={!taskRepeat}
                             />
 
                         </FormGroup>
+                        
+                        <SelectedPoints> 
 
                         <Button
                             variant="outlined"
@@ -380,10 +426,19 @@ const Task: React.FC = () => {
                             type='button'
                             className={classes.btnAddRoom}
                             endIcon={ <Room />}
-                            onClick={handleOpenDrawerCoords}
+                            onClick={handleOpenCoords}
                         >
                             Adicionar pontos no mapa
                         </Button>
+                        
+                        {
+                            selectTaskType === null ? null :
+                            selectTaskType === 'Ponto de chegada' ?
+                            <p> {coordinatesMarker} </p>
+                            :
+                            ( <p> {coordinatesRoundQuadrant.length} Pontos selecionados </p>)
+                        }
+                        </SelectedPoints>
 
                     </DialogContent>
 
@@ -415,6 +470,22 @@ const Task: React.FC = () => {
                 </Form>
 
             </Dialog>
+
+            <Snackbar
+                anchorOrigin={{vertical: 'bottom', horizontal: 'left'}}
+                open={openCoords}
+                message={taskTitle}
+                key={v4()}
+                className={classes.snackColor}
+                action={
+                    <Button
+                        endIcon={<Save />}
+                        onClick={handleOpenCoords}
+                    >
+                        Terminar
+                    </Button>
+                }
+            />
 
         </BaseNavbar> 
     );
