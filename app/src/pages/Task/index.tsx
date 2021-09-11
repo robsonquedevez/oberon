@@ -42,15 +42,9 @@ import {
     PopUpContent
 } from './styles';
 
-import marker from '../../assets/images/marker.svg';
 import QuadMarker from '../../assets/images/quadrantMarker.svg';
 
-const markerIcon = L.icon({
-    iconUrl: marker,
-    iconSize: [58, 58],
-});
-
-const quadMarkerIcon = L.icon({
+const MakerIcon = L.icon({
     iconUrl: QuadMarker,
     iconSize: [18, 18],
 });
@@ -76,11 +70,6 @@ const useStyles = makeStyles(() => ({
         width: 315,
     }
 }));
-
-interface Coords {
-    lat: number;
-    lng: number;
-}
 
 interface ICoordinatesMarker {
     setCoordinates(coords: L.LatLng): void;
@@ -117,7 +106,7 @@ const AddQuadrant: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) =>
                     <Marker
                         key={v4()}
                         position={L.latLng(element)}
-                        icon={quadMarkerIcon}
+                        icon={MakerIcon}
                     />
                 ))
             :
@@ -153,7 +142,7 @@ const AddRound: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) => {
             <Marker
                 key={v4()}
                 position={L.latLng(element)}
-                icon={quadMarkerIcon}
+                icon={MakerIcon}
                 
             >
                 <Popup>
@@ -193,7 +182,7 @@ const AddMarker: React.FC<ICoordinatesMarker> = ({ setCoordinates }) => {
         
     <Marker
         position={position}
-        icon={quadMarkerIcon}      
+        icon={MakerIcon}      
     >
         <Popup>
             <p>lat: {position.lat}</p>
