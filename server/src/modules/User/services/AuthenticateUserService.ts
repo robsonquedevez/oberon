@@ -10,9 +10,18 @@ interface IAuthenticate {
     password: string;
 }
 
+interface IResponse {
+    user: {
+        id: string,
+        name: string;
+        email: string;
+    }
+    token: string;
+}
+
 class AuthenticateUserService {
 
-    public async execute({ email, password }: IAuthenticate): Promise<string> {
+    public async execute({ email, password }: IAuthenticate): Promise<IResponse> {
 
         const userRepository = getRepository(User);
 
@@ -49,7 +58,14 @@ class AuthenticateUserService {
             }
         );
 
-        return token;
+        return {
+            user: {
+                id: user.id,
+                name: user.name,
+                email: user.email
+            },
+            token
+        };
     }
 }
 
