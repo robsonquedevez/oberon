@@ -7,5 +7,7 @@ export const Err = styled.div`
     span {
         color: #f44336;
         font-size: 10pt;
+        font-family: 'Roboto', sans-serif;
+        margin-top: 5px;
     }
 `;
