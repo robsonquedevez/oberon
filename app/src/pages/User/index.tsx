@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import BaseNavbar from '../../components/BaseNavbar';
 import {
     Paper,
@@ -25,6 +25,9 @@ import {
 } from '@material-ui/icons';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
+import { useSnackbar } from 'notistack';
+
+import api from '../../services/api';
 
 import Input from '../../components/Input';
 
@@ -70,6 +73,21 @@ const User: React.FC = () => {
     const [btnLoading, setBtnLoading] = useState<boolean>(false);
     const [showDialogUser, setShowDialogUser] = useState<boolean>(false);
     const [selectUserEdit, setSelectUserEdit] = useState<ISelectUserEdit | null >(null);
+    const { enqueueSnackbar } = useSnackbar();
+
+    useEffect(() => {
+        (
+            async () => {
+                api.get('/user')
+                .then(response => {
+                    console.log(response.data);
+                })
+                .catch(error => {
+                    enqueueSnackbar(error.message, { variant: 'error' });
+                });
+            }
+        )()
+    }, []);
 
     const handleOpenDialogUser = useCallback(() => {
         setShowDialogUser(!showDialogUser);
@@ -88,7 +106,6 @@ const User: React.FC = () => {
             email: rows[id].email,
             admin: false
         });
-
     }, []);
 
     const columns: GridColDef[] = [

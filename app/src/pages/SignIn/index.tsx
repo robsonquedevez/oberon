@@ -4,6 +4,11 @@ import { Button, CircularProgress } from '@material-ui/core';
 import { Send } from '@material-ui/icons';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
+import * as Yup from 'yup'
+import { useSnackbar } from 'notistack';
+
+import { useAuth } from '../../hooks/Auth';
+import getValidationErrors from '../../utils/getValidationErrors';
 
 import Input from '../../components/Input';
 
@@ -20,18 +25,54 @@ import {
     Animate
 } from './styles';
 
+interface SignInFormData {
+    email: string;
+    password: string;
+}
+
 const SignIn: React.FC = () => {
     const formRef = useRef<FormHandles>(null);
     const history = useHistory();
     const [btnLoading, setBtnLoading] = useState<boolean>(false);
+    const { signIn } = useAuth();
+    const { enqueueSnackbar } = useSnackbar();
 
-    const handleSubmit = useCallback(() => {
+    const handleSubmit = useCallback( async (data: SignInFormData) => {
         setBtnLoading(true);
-        setTimeout(() => {
+        
+        try {
+            formRef.current?.setErrors({});
+            const schema = Yup.object().shape({
+                email: Yup.string().required('Campo obrigatório'),
+                password: Yup.string().required('Campo obrigatório')
+            });
+
+            await schema.validate(data, {
+                abortEarly: false
+            });
+
+            await signIn({ email: data.email, password: data.password });
+
             setBtnLoading(false);
+
             history.push('/home');
-        }, 2000);
-    }, [history]);
+
+        } catch(err) {
+            setBtnLoading(false);
+
+            if(err instanceof Yup.ValidationError) {
+                const errors = getValidationErrors(err);
+                formRef.current?.setErrors(errors);
+                return;
+            }
+
+            const msg = err.response.data? err.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
+
+            enqueueSnackbar(msg, {variant: 'error'});
+        }
+
+
+    }, [history, signIn, enqueueSnackbar]);
 
     return (
         <Container>
@@ -55,7 +96,8 @@ const SignIn: React.FC = () => {
 
                             <Input
                                 label='Usuário'
-                                name='user'
+                                name='email'
+                                type='email'
                             />
 
                             <Input
