@@ -2,14 +2,14 @@ import React, { createContext, useCallback, useContext, useState } from 'react';
 import api from '../services/api';
 
 interface User {
-    code: string;
+    id: string;
     name: string;
     email: string;
 }
 
 interface AuthState {
-    token: string;
     user: User;
+    token: string;
 }
 
 interface SignInCredentials {
@@ -27,8 +27,8 @@ const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
 export const AuthProvider: React.FC = ({ children }) => {
     const [data, setData] = useState<AuthState>(() => {
-        const token = localStorage.getItem('@GPClients:token');
-        const user = localStorage.getItem('@GPClients:user');
+        const token = localStorage.getItem('@Oberon:token');
+        const user = localStorage.getItem('@Oberon:user');
 
         if(token && user) {
             api.defaults.headers.authorization = `Bearer ${token}`;
@@ -46,8 +46,8 @@ export const AuthProvider: React.FC = ({ children }) => {
 
         const { token, user } = response.data;
 
-        localStorage.setItem('@GPClients:token', token);
-        localStorage.setItem('@GPClients:user', JSON.stringify(user));
+        localStorage.setItem('@Oberon:token', token);
+        localStorage.setItem('@Oberon:user', JSON.stringify(user));
 
         api.defaults.headers.authorization = `Bearer ${token}`;
 
@@ -55,12 +55,10 @@ export const AuthProvider: React.FC = ({ children }) => {
     }, []);
 
     const signOut = useCallback(() => {
-        localStorage.removeItem('@GPClients:token');
-        localStorage.removeItem('@GPClients:user');
-        localStorage.removeItem(`@GPClients${data.user.code}:Invoices`);
-        localStorage.removeItem(`@GPClients${data.user.code}:Orders`);
+        localStorage.removeItem('@Oberon:token');
+        localStorage.removeItem('@Oberon:user');
         setData({} as AuthState);
-    }, [data]);
+    }, []);
 
     return (
         <AuthContext.Provider
