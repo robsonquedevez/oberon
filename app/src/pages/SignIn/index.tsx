@@ -57,7 +57,7 @@ const SignIn: React.FC = () => {
 
             history.push('/home');
 
-        } catch(err) {
+        } catch(err: any) {
             setBtnLoading(false);
 
             if(err instanceof Yup.ValidationError) {
