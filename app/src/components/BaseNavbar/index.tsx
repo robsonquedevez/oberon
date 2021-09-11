@@ -26,6 +26,7 @@ import {
 import clsx from 'clsx';
 
 import { useMenu } from '../../hooks/MenuContext';
+import { useAuth } from '../../hooks/Auth';
 
 import { 
     ContentLogo,
@@ -115,11 +116,17 @@ interface NavBarProps {
 const BaseNavbar: React.FC<NavBarProps> = ({ pageActive, children }) => {
     const classes = useStyles();
     const { show, setShow } = useMenu();
+    const { user, signOut } = useAuth();
     const history = useHistory();
 
     const handlePushPage = useCallback((page: string) => {
         history.push(`/${page}`);
     }, [history]);
+
+    const handleSignOut = useCallback(() => {
+        signOut();
+        history.push('/');
+    }, [signOut, history]);
 
     return (
       <div className={classes.root}>
@@ -153,8 +160,8 @@ const BaseNavbar: React.FC<NavBarProps> = ({ pageActive, children }) => {
                   <div className={clsx(classes.itemsToolBar)}>
                       <UserLogin>
                           <div>
-                              <p>Usuário</p>
-                              <p>Empresa</p>
+                              <p>{user.name}</p>
+                              <p>{user.email}</p>
                           </div>
                           <AccountCircle />
                       </UserLogin>
@@ -163,7 +170,7 @@ const BaseNavbar: React.FC<NavBarProps> = ({ pageActive, children }) => {
                           type='button'
                           color='secondary'
                           endIcon={<ExitToApp />}
-                          onClick={() => {}}
+                          onClick={handleSignOut}
                           >
                           Sair
                       </Button>
