@@ -28,7 +28,7 @@ export class CreateEnterprise1625614898801 implements MigrationInterface {
                     },
                     {
                         name: 'number',
-                        type: 'integer',
+                        type: 'varchar',
                         isNullable: true
                     },
                     {

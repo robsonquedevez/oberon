@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner, Table} from "typeorm";
+import {MigrationInterface, QueryRunner, Table, TableForeignKey} from "typeorm";
 
 export class CreateTask1625615664918 implements MigrationInterface {
 
@@ -69,9 +69,40 @@ export class CreateTask1625615664918 implements MigrationInterface {
                 ]
             })
         );
+
+        await queryRunner.createForeignKey('tasks', 
+            new TableForeignKey({                          
+                name: 'fk_create_user_task',
+                columnNames: ['created_user'],
+                referencedColumnNames: ['id'],
+                referencedTableName: 'users'                
+            })
+        )
+
+        await queryRunner.createForeignKey('tasks', 
+            new TableForeignKey({                          
+                name: 'fk_executing_user_task',
+                columnNames: ['executing_user'],
+                referencedColumnNames: ['id'],
+                referencedTableName: 'users'                
+            })
+        )
+
+        await queryRunner.createForeignKey('tasks', 
+            new TableForeignKey({                          
+                name: 'fk_enterprise_tasks',
+                columnNames: ['enterprise'],
+                referencedColumnNames: ['cnpj'],
+                referencedTableName: 'enterprises'                
+            })
+        )
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.dropForeignKey('tasks','fk_create_user_task');
+        await queryRunner.dropForeignKey('tasks','fk_executing_user_task');
+        await queryRunner.dropForeignKey('tasks','fk_enterprise_tasks');
+        await queryRunner.dropTable('tasks');
     }
 
 }
