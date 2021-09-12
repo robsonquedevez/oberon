@@ -72,7 +72,7 @@ export const Login = styled.div`
         flex-direction: column;
 
         button {
-            margin-top: 5rem;
+            margin-top: 1rem;
         }
     }
 
@@ -94,6 +94,17 @@ export const FieldGroup = styled.div`
     align-items: center;
     flex-direction: column;
     width: 100%;
+
+    .row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+
+        div + div {
+            margin-left: 0.3rem;
+        }
+    }
 `;
 
 const appearFromLeft = keyframes`
