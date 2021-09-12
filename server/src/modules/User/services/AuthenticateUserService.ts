@@ -15,6 +15,8 @@ interface IResponse {
         id: string,
         name: string;
         email: string;
+        administrator: boolean;
+        enterprise: string;
     }
     token: string;
 }
@@ -46,10 +48,7 @@ class AuthenticateUserService {
 
         const token = sign(
             { 
-                user: user.name, 
-                email: user.email, 
-                admin: user.administrator,
-                enterprise: user.enterprise
+                id: user.id
             },
             authConfig.jwt.secret as string,
             {
@@ -62,7 +61,9 @@ class AuthenticateUserService {
             user: {
                 id: user.id,
                 name: user.name,
-                email: user.email
+                email: user.email,
+                administrator: user.administrator,
+                enterprise: user.enterprise
             },
             token
         };

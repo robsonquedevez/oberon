@@ -71,11 +71,11 @@ class EnterpriseController {
 
     public async findById(request: Request, response: Response): Promise<Response> {
 
-        const { cnpj } = request.body;
+        const { cnpj } = request.params;
 
         const listEnterprise = new ListEnterpriseService();
 
-        const enterprise = await listEnterprise.execute(cnpj);
+        const enterprise = await listEnterprise.execute(cnpj as string);
 
         return response.status(200).json({ enterprise });
     }

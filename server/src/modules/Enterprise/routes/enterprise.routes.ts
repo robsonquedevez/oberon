@@ -8,6 +8,6 @@ const enterpriseRouter = Router();
 
 enterpriseRouter.post('/', enterpriseController.create);
 enterpriseRouter.put('/', ensureAuthenticated, enterpriseController.update);
-enterpriseRouter.get('/', ensureAuthenticated, enterpriseController.findById);
+enterpriseRouter.get('/:cnpj', ensureAuthenticated, enterpriseController.findById);
 
 export default enterpriseRouter;
