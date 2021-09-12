@@ -15,8 +15,8 @@ class Enterprise {
     @Column()
     address: string;
 
-    @Column('numeric')
-    number: number;
+    @Column()
+    number: string;
 
     @Column()
     district: string;
