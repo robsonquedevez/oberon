@@ -1,8 +1,17 @@
 import { Request, Response } from 'express'
 import CreateEnterpriseService from '../services/CreateEnterpriseService';
 import UpdateEnterpriseService from '../services/UpdateEnterpriseService';
-import Enterprise from '../entities/Enterprise';
 import ListEnterpriseService from '../services/ListEnterpriseService';
+
+interface IRequest {   
+    cnpj: string;
+    corporateName: string;       
+    name: string;
+    email: string;
+    password: string;
+    passwordConfirmation: string;    
+}
+
 
 class EnterpriseController {
 
@@ -10,29 +19,23 @@ class EnterpriseController {
 
         const {
             cnpj,
+            corporateName,
             name,
             email,
-            address,
-            number,
-            district,
-            city,
-            state,
-            zip_code
+            password,
+            passwordConfirmation
         } = request.body;
 
         const createEnterprise = new CreateEnterpriseService();
 
         await createEnterprise.execute({ 
             cnpj,
-            name,
+            corporateName,
             email,
-            address,
-            number,
-            district,
-            city,
-            state,
-            zip_code
-        } as Enterprise);
+            name,
+            password,
+            passwordConfirmation
+        } as IRequest);
 
         return response.status(201).send();
     }

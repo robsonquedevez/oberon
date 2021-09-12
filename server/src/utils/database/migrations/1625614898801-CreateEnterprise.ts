@@ -23,27 +23,33 @@ export class CreateEnterprise1625614898801 implements MigrationInterface {
                     },
                     {
                         name: 'address',
-                        type: 'varchar'
+                        type: 'varchar',
+                        isNullable: true
                     },
                     {
                         name: 'number',
-                        type: 'integer'
+                        type: 'integer',
+                        isNullable: true
                     },
                     {
                         name: 'district',
-                        type: 'varchar'
+                        type: 'varchar',
+                        isNullable: true
                     },
                     {
                         name: 'city',
-                        type: 'varchar'
+                        type: 'varchar',
+                        isNullable: true
                     },
                     {
                         name: 'state',
-                        type: 'varchar'
+                        type: 'varchar',
+                        isNullable: true
                     },
                     {
                         name: 'zip_code',
-                        type: 'varchar'
+                        type: 'varchar',
+                        isNullable: true
                     },
                     {
                         name: 'created_at',
