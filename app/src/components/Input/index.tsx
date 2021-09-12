@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, InputHTMLAttributes } from 'react';
 import { TextField, TextFieldProps } from '@material-ui/core';
 import { useField } from '@unform/core';
 
-import { Err } from './styles';
+import { Container, Err } from './styles';
 
 interface InputProps extends InputHTMLAttributes<TextFieldProps> {
     name: string;
@@ -35,7 +35,7 @@ const Input: React.FC<InputProps> = ({
     }, [fieldName, registerField, setErr, error]);
 
     return (     
-        <>   
+        <Container>   
             <TextField
                 variant={variant}
                 margin="normal"
@@ -58,7 +58,7 @@ const Input: React.FC<InputProps> = ({
                     <span>{error}</span>
                 </Err>
             }
-        </>
+        </Container>
     );
 }
 
