@@ -33,3 +33,14 @@ export const  InputGroup = styled.div`
         margin-left: 1rem;
     }
 `;
+
+export const Loading = styled.div`
+    display: flex;
+    align-items: center;
+
+    p {
+        font-family: 'Roboto', sans-serif;
+        color: #566573;
+        margin-left: 1.5rem;        
+    }
+`;
