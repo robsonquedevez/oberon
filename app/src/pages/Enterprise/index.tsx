@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import BaseNavbar from '../../components/BaseNavbar';
 import {
     Paper,
@@ -10,6 +10,7 @@ import { Save } from '@material-ui/icons';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import { useSnackbar } from 'notistack';
+import * as Yup from 'yup';
 
 import api from '../../services/api';
 import { useAuth } from '../../hooks/Auth';
@@ -22,13 +23,14 @@ import {
     InputGroup,
     Loading
 } from './styles';
+import getValidationErrors from '../../utils/getValidationErrors';
 
 interface IEnterprise {
     cnpj: string;
     name: string;
     email: string;
     address: string;
-    number: number;
+    number: string;
     district: string;
     city: string;
     state: string;
@@ -60,6 +62,7 @@ const Enterprise: React.FC = () => {
                     setLoading(false);
                 })
                 .catch(error => {
+                    setBtnLoading(false);
                     const msg = error.response ? 
                     error.response.data.message : 
                     'Erro ao buscar Empresa, Tente novamente.';
@@ -69,6 +72,45 @@ const Enterprise: React.FC = () => {
             }
         )();
     }, [enqueueSnackbar, user.enterprise]);
+
+    const handleSubmit = useCallback( async (data: IEnterprise) => {
+        setBtnLoading(true);
+        try {
+            formRef.current?.setErrors({});
+            const schema = Yup.object().shape({
+                cnpj: Yup.string().required('Campo obrigatório').min(14, 'CNPJ inválido'),
+                name: Yup.string().required('Campo Obrigatório'),
+                email: Yup.string().email('Email inválido'),
+                address: Yup.string(),
+                number: Yup.string(),
+                district: Yup.string(),
+                city: Yup.string(),
+                state: Yup.string(),
+                zip_code: Yup.string()
+            });
+
+            await schema.validate(data, {
+                abortEarly: false
+            });
+
+            await api.put('/enterprise', data);
+
+            enqueueSnackbar('Dados da empresa atualizados com sucesso!', { variant: 'success' });
+            setBtnLoading(false);
+
+        } catch (error) {
+            setBtnLoading(false);
+            if(error instanceof Yup.ValidationError) {
+                const errors = getValidationErrors(error);
+                formRef.current?.setErrors(errors);
+                return;
+            }
+
+            const msg = error.response ? error.response.data.message : 'Erro ao atualizar dados da empresa. Tente novamente.';
+
+            enqueueSnackbar(msg, { variant: 'error' });
+        }
+    }, [enqueueSnackbar]);
 
     return (
         <BaseNavbar pageActive='enterprise'>
@@ -83,7 +125,7 @@ const Enterprise: React.FC = () => {
 
                         <Form 
                             ref={formRef} 
-                            onSubmit={() => {}}
+                            onSubmit={handleSubmit}
                             initialData={enterprise ? {
                                 cnpj: enterprise.cnpj,
                                 name: enterprise.name,
@@ -111,22 +153,28 @@ const Enterprise: React.FC = () => {
                                         label='CNPJ'
                                         name='cnpj'
                                         key='cnpj'
+                                        type='text'
+                                        changeDisable={true}
                                     />
                                     <Input
                                         label='Razão Social'
                                         name='name'
                                         key='name'
+                                        type='text'
+                                        changeDisable={true}
                                     />                            
                                 </InputGroup>
                                 <InputGroup>
                                     <Input
                                         label='E-mail'
                                         name='email'
+                                        type='text'
                                         key='email'
                                     />                            
                                     <Input
                                         label='Endereço'
                                         name='address'
+                                        type='text'
                                         key='address'
                                     />
                                 </InputGroup>
@@ -134,26 +182,31 @@ const Enterprise: React.FC = () => {
                                     <Input
                                         label='Número'
                                         name='number'
+                                        type='text'
                                         key='number'
                                     />
                                     <Input
                                         label='Bairro'
                                         name='district'
+                                        type='text'
                                         key='district'
                                     />
                                     <Input
                                         label='Cidade'
                                         name='city'
+                                        type='text'
                                         key='city'
                                     />
                                     <Input
                                         label='UF'
                                         name='state'
+                                        type='text'
                                         key='state'
                                     />
                                     <Input
                                         label='CEP'
                                         name='zip_code'
+                                        type='text'
                                         key='zip_code'
                                     />
                                 </InputGroup>
