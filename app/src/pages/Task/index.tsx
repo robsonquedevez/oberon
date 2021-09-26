@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     Fab,
     makeStyles,
@@ -19,7 +19,7 @@ import {
     MenuItem,
     Snackbar,
     TextField,
-    Tooltip
+    Tooltip,
 } from '@material-ui/core';
 import {
     Add,
@@ -32,6 +32,9 @@ import { Form } from '@unform/web';
 import { useMapEvents, Marker, Polygon, Popup } from '@monsonjeremy/react-leaflet';
 import * as L from 'leaflet';
 import { v4 } from 'uuid';
+
+import api from '../../services/api';
+import { useAuth } from '../../hooks/Auth';
 
 import BaseNavbar from '../../components/BaseNavbar';
 import Map from '../../components/Map';
@@ -77,6 +80,11 @@ interface ICoordinatesMarker {
 
 interface ICoordinatesRoundQuadrant {
     setCoordinates(coords: L.LatLng[]): void;
+}
+
+interface User {
+    id: string;
+    name: string;
 }
 
 function removeMarker(marker: L.LatLng, coordinates: L.LatLng[]) {
@@ -195,9 +203,11 @@ const AddMarker: React.FC<ICoordinatesMarker> = ({ setCoordinates }) => {
 const Task: React.FC = () => {
     const classes = useStyles();
     const formRef = useRef<FormHandles>(null);
+    const { user } = useAuth();
     const [open, setOpen] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState<boolean>(false);
     const [openCoords, setOpenCoords] = useState<boolean>(false);
+    const [users, setUsers] = useState<User[]>([]);
     
     const [coordinatesMarker, setCoordinatesMarker] = useState<L.LatLng | null>(null);
     const [coordinatesRoundQuadrant, setCoordinatesRoundQuadrant] = useState<L.LatLng[]>([]);
@@ -208,6 +218,32 @@ const Task: React.FC = () => {
     const [endDate, setEndDate] = useState<string>('');
     const [taskRepeat, setTaskRepeat] = useState<boolean>(false);
     const [taskWeekDays, setTaskWeekDays] = useState<string[]>([]);
+
+    useEffect(() => {
+        (async () => {
+            api.get(`/user/${user.enterprise}`)
+            .then(response => {
+                setUsers(response.data);
+            })
+            .catch(error => {
+                console.error(error);
+            });
+        })()
+    }, [user.enterprise]);
+
+    const handleSubmit = useCallback(() => {
+        setBtnLoading(true);
+        console.log(selectUser);
+        console.log(selectTaskType);
+        console.log(taskTitle);
+        console.log(startDate);
+        console.log(endDate);
+        console.log(taskRepeat);
+        console.log(taskWeekDays);
+        console.log(coordinatesMarker);
+        console.log(coordinatesRoundQuadrant);
+        setBtnLoading(false);
+    }, [selectUser, selectTaskType, taskTitle, startDate, endDate, taskRepeat, taskWeekDays, coordinatesMarker, coordinatesRoundQuadrant]);
 
     const handleOpenDialogTask = useCallback(() => {
         setOpen(!open);
@@ -263,7 +299,7 @@ const Task: React.FC = () => {
             setTaskWeekDays([...taskWeekDays, newDay]);
         }        
 
-    }, [taskWeekDays]);
+    }, [taskWeekDays]);    
 
     return (
         <BaseNavbar pageActive='task'>            
@@ -313,7 +349,7 @@ const Task: React.FC = () => {
             >
                 <DialogTitle>Criar nova tarefa</DialogTitle>
 
-                <Form ref={formRef} onSubmit={() => {}}>
+                <Form ref={formRef} onSubmit={handleSubmit}>
 
                     <DialogContent>
 
@@ -340,13 +376,12 @@ const Task: React.FC = () => {
                                     value={selectUser}
                                     style={{ height: 48 }}
                                 >
-                                    <MenuItem value={'teste'}>
-                                        teste
-                                    </MenuItem>
+                                    { users.map(user => (
+                                        <MenuItem key={user.id} value={user.id}>
+                                            {user.name}
+                                        </MenuItem>
+                                    )) }
 
-                                    <MenuItem value={'teste2'}>
-                                        teste2
-                                    </MenuItem>
                                 </Select>
                             </FormControl>
 
@@ -382,7 +417,7 @@ const Task: React.FC = () => {
                             <TextField
                                 label='Início'
                                 name='start_task'
-                                type='date'
+                                type='datetime-local'
                                 variant='filled'
                                 className={classes.textField}
                                 onChange={handleStartDate}
@@ -395,7 +430,7 @@ const Task: React.FC = () => {
                             <TextField
                                 label='Fim'
                                 name='end_task'
-                                type='date'
+                                type='datetime-local'
                                 variant='filled'
                                 className={classes.textField}
                                 onChange={handleEndDate}
