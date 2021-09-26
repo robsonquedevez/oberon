@@ -6,6 +6,7 @@ const userController = new UserController();
 const userRouter = Router();
 
 userRouter.post('/', userController.create);
+userRouter.get('/:enterprise', ensureAuthenticated, userController.ListAll);
 userRouter.get('/', ensureAuthenticated, userController.findById);
 userRouter.put('/', ensureAuthenticated, userController.update);
 userRouter.patch('/', ensureAuthenticated, userController.changePassword)

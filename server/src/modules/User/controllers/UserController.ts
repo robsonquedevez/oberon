@@ -6,6 +6,7 @@ import CreateUserService from '../services/CreateUserService';
 import ListProfileService from '../services/ListProfileService';
 import UpdateUserService from '../services/UpdateUserService';
 import ResetPasswordService from '../services/ResetPasswordService';
+import ListAllProfileToEnterpriseService from '../services/ListAllProfileToEnterpriseService';
 
 class UserController {
 
@@ -89,6 +90,17 @@ class UserController {
         });
 
         return response.status(200).send();
+    }
+
+    public async ListAll(request: Request, response: Response): Promise <Response> {
+
+        const { enterprise } = request.params;        
+
+        const listAllProfileToEnterprise = new ListAllProfileToEnterpriseService();
+
+        const users = await listAllProfileToEnterprise.execute(enterprise);
+
+        return response.status(200).send(users);
     }
 }
 
