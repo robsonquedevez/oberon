@@ -26,6 +26,7 @@ import {
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
 import { useSnackbar } from 'notistack';
+import { useAuth } from '../../hooks/Auth';
 
 import api from '../../services/api';
 
@@ -67,27 +68,40 @@ interface ISelectUserEdit {
     admin: boolean;
 }
 
+interface User {
+    id: string;
+    name: string;
+    email: string;
+    administrator: boolean;
+}
+
 const User: React.FC = () => {
     const classes = useStyles();
     const formRef = useRef<FormHandles>(null);
+    const formRefCreate = useRef<FormHandles>(null);
     const [btnLoading, setBtnLoading] = useState<boolean>(false);
     const [showDialogUser, setShowDialogUser] = useState<boolean>(false);
+    const [showDialogCreateUser, setShowDialogCreateUser] = useState<boolean>(false);
     const [selectUserEdit, setSelectUserEdit] = useState<ISelectUserEdit | null >(null);
+    const [users, setUsers] = useState<User[]>([]);
     const { enqueueSnackbar } = useSnackbar();
+    const { user } = useAuth();
+    const [update, setUpdate] = useState<boolean>(false);
 
     useEffect(() => {
         (
             async () => {
-                api.get('/user')
+                api.get(`/user/${user.enterprise}`)
                 .then(response => {
-                    console.log(response.data);
+                    setUsers(response.data);
+                    setUpdate(false);
                 })
                 .catch(error => {
                     enqueueSnackbar(error.message, { variant: 'error' });
                 });
             }
         )()
-    }, []);
+    }, [enqueueSnackbar, user.enterprise, update]);
 
     const handleOpenDialogUser = useCallback(() => {
         setShowDialogUser(!showDialogUser);
@@ -98,15 +112,63 @@ const User: React.FC = () => {
 
     }, [showDialogUser]);
 
-    const handleOpenEditUser = useCallback((id: number) => {
+    const handleOpenDialogCreateUser = useCallback(() => {
+        setShowDialogCreateUser(!showDialogCreateUser)
+    }, [showDialogCreateUser]);
+
+    const handleOpenEditUser = useCallback((id: string) => {
         setShowDialogUser(true);
 
+        const user = users.filter(user => user.id === id)[0];
+
         setSelectUserEdit({
-            name: rows[id].name,
-            email: rows[id].email,
-            admin: false
+            name: user.name,
+            email: user.email,
+            admin: user.administrator
         });
-    }, []);
+    }, [users]);
+
+    const handleSubmitCreateUser = useCallback( async (data: ISelectUserEdit) => {
+        
+        try {
+            await api.post('/user', {
+                name: data.name,
+                email: data.email,
+                administrator: data.admin ? true : false,
+                enterprise: user.enterprise,
+                invite: true
+            });    
+            handleOpenDialogCreateUser();
+            enqueueSnackbar('Usuário cadastrado com sucesso!', { variant: 'success' });
+            setBtnLoading(false);
+            setUpdate(true);      
+        } catch (error) {
+            setBtnLoading(false);            
+
+            const msg = error.response ? error.response.data.message : 'Erro ao cadastrar novo usuário. Tente novamente.';
+
+            enqueueSnackbar(msg, { variant: 'error' });
+        }
+    }, [enqueueSnackbar, user.enterprise, handleOpenDialogCreateUser]);
+
+    const DeleteUser = useCallback(async (id: string) => {
+        try {
+            await api.delete('/user', {
+                data: {
+                    id
+                }
+            });
+            enqueueSnackbar('Usuário excluido com sucesso!', { variant: 'success' });
+            setUpdate(true); 
+        } catch (error) {
+            setBtnLoading(false);            
+
+            const msg = error.response ? error.response.data.message : 'Erro ao cadastrar novo usuário. Tente novamente.';
+
+            enqueueSnackbar(msg, { variant: 'error' });
+        }
+       
+    }, [enqueueSnackbar]);
 
     const columns: GridColDef[] = [
         { 
@@ -116,6 +178,7 @@ const User: React.FC = () => {
             editable: false,
             disableReorder: true,
             disableColumnMenu: true,
+            hide: true
         },
         {
             field: 'name',
@@ -134,6 +197,24 @@ const User: React.FC = () => {
             disableColumnMenu: true,
         },
         {
+            field: 'administrator',
+            headerName: 'Administrador',
+            width: 250,
+            editable: false,
+            disableReorder: true,
+            disableColumnMenu: true,
+            type: 'boolean'
+        },
+        {
+            field: 'enterprise',
+            headerName: 'Empresa',
+            width: 250,
+            editable: false,
+            disableReorder: true,
+            disableColumnMenu: true,
+            hide: true
+        },
+        {
             field: 'edit',
             sortable: false,
             width: 70,
@@ -147,7 +228,7 @@ const User: React.FC = () => {
                     <Tooltip title='Editar'>
                         <IconButton 
                             className={classes.button} 
-                            onClick={() => handleOpenEditUser(Number(params.id) - 1)}
+                            onClick={() => handleOpenEditUser(String(params.id))}
                         >
                             <Edit  className={classes.icon} />
                         </IconButton> 
@@ -168,7 +249,7 @@ const User: React.FC = () => {
                     <Tooltip title='Reenviar e-mail'>
                         <IconButton 
                             className={classes.button} 
-                            onClick={() => handleOpenEditUser(Number(params.id) - 1)}
+                            onClick={() => handleOpenEditUser(String(params.id))}
                         >
                             <Mail  className={classes.icon} />
                         </IconButton>
@@ -186,10 +267,10 @@ const User: React.FC = () => {
             disableReorder: true,
             renderCell: ( params ) => {                
                 return (
-                    <Tooltip title='Reenviar e-mail'>
+                    <Tooltip title='Excluir'>
                         <IconButton 
                             className={classes.button} 
-                            onClick={() => handleOpenEditUser(Number(params.id) - 1)}
+                            onClick={() => DeleteUser(String(params.id))}
                         >
                             <Delete  className={classes.icon} />
                         </IconButton>
@@ -198,11 +279,6 @@ const User: React.FC = () => {
             }
         }
     ];
-
-    const rows = [
-        { id: 1, name: 'Jon Snow', email: 'snow@ice.com' },
-        { id: 2, name: 'michael scot', email: 'scot@dundermiflin.com' }
-    ]
 
     return (
         <BaseNavbar pageActive='user'>
@@ -217,7 +293,7 @@ const User: React.FC = () => {
 
                         <DataGrid
                             className={classes.grid}
-                            rows={rows}
+                            rows={users ? users : []}
                             columns={columns}
                             pageSize={5}
                             disableSelectionOnClick
@@ -228,7 +304,7 @@ const User: React.FC = () => {
                             color='primary'
                             type='button'
                             endIcon={<PersonAdd />}
-                            onClick={handleOpenDialogUser}
+                            onClick={handleOpenDialogCreateUser}
                         >
                             Novo usuário
                         </Button>
@@ -238,10 +314,76 @@ const User: React.FC = () => {
                 </Content>
 
                 <Dialog
-                    open={showDialogUser}
-                    onClose={handleOpenDialogUser}
+                    open={showDialogCreateUser}
+                    onClose={handleOpenDialogCreateUser}
                     aria-labelledby='Cadastro de usuário'
                     aria-describedby='Cadastrar novo usuário na aplicação'
+                >
+                    <DialogTitle>Cadastrar usuário</DialogTitle>
+                    <DialogContent>
+                        <Form 
+                            ref={formRefCreate} 
+                            onSubmit={handleSubmitCreateUser}                       
+                        >                            
+                            <InputGroup>
+                                <Input
+                                    label='Nome'
+                                    name='name'
+                                    type='text'
+                                />
+                                <Input
+                                    label='E-mail'
+                                    name='email'
+                                    type='text'
+                                />
+                            </InputGroup>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox 
+                                            name='admin'
+                                            color='primary'                                            
+                                        />
+                                    }
+                                    label='Administrador'
+                                />
+                                
+                            <InputGroup>
+                                
+                            </InputGroup>
+
+                            <DialogActions>
+                                <Button
+                                    variant="outlined"
+                                    color='secondary'
+                                    type='button'
+                                    endIcon={ <Close />}
+                                    onClick={handleOpenDialogCreateUser}
+                                >
+                                    Cancelar
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color='primary'
+                                    type='submit'
+                                    endIcon={
+                                        btnLoading ?
+                                        <CircularProgress color='inherit' size={18} />
+                                        : <Save />
+                                    }
+                                    disabled={btnLoading}
+                                >
+                                    Salvar
+                                </Button>
+                            </DialogActions>
+                        </Form>
+                    </DialogContent>
+                </Dialog>
+                
+                <Dialog
+                    open={showDialogUser}
+                    onClose={handleOpenDialogUser}
+                    aria-labelledby='Edição de usuário'
+                    aria-describedby='Editar usuário na aplicação'
                 >
                     <DialogTitle>Cadastrar usuário</DialogTitle>
                     <DialogContent>
@@ -265,6 +407,7 @@ const User: React.FC = () => {
                                     label='E-mail'
                                     name='email'
                                     type='text'
+                                    changeDisable={true}
                                 />
                             </InputGroup>
                                 <FormControlLabel
@@ -272,6 +415,7 @@ const User: React.FC = () => {
                                         <Checkbox 
                                             name='admin'
                                             color='primary'
+                                            checked={selectUserEdit?.admin ? true : false}
                                         />
                                     }
                                     label='Administrador'
