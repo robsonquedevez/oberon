@@ -3,10 +3,15 @@ import AppErrors from '../../../utils/errors/AppErrors';
 import User from '../entities/User';
 import Enterprise from '../../Enterprise/entities/Enterprise';
 import hash from '../../../utils/hash/HashProvider';
+import crypto from 'crypto';
+
+interface IUser extends User {
+    invite?:  boolean;
+}
 
 class CreateUserService {
 
-    public async execute(user: User): Promise<User> {
+    public async execute(user: IUser): Promise<User> {
 
         const userRepository = getRepository(User);
 
@@ -38,7 +43,14 @@ class CreateUserService {
             );
         }
 
-        user.password = await hash.generateHash({ payload: user.password });
+        if(!user.invite ) {
+            user.password = await hash.generateHash({ 
+                payload: user.password ? user.password : '!@#$%&*' 
+            });
+        }else {
+            user.token = crypto.randomBytes(16).toString('hex');
+            user.validate_token = new Date();
+        }
 
         const newUser = userRepository.create(user);
 

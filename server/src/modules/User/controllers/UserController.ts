@@ -7,6 +7,7 @@ import ListProfileService from '../services/ListProfileService';
 import UpdateUserService from '../services/UpdateUserService';
 import ResetPasswordService from '../services/ResetPasswordService';
 import ListAllProfileToEnterpriseService from '../services/ListAllProfileToEnterpriseService';
+import DeleteUserService from '../services/DeleteUserService';
 
 class UserController {
 
@@ -17,15 +18,20 @@ class UserController {
             password,
             password_confirmation,
             enterprise,
-            administrator
+            administrator,
+            invite,
         } = request.body;
 
-        if(String(password).length < 6) {
-            throw new AppErrors('Senha deve ter no mínimo 6 caracteres', 400);
-        }
+        if(!invite) {
 
-        if(password !== password_confirmation) {
-            throw new AppErrors('Senhas informadas não conferem!', 400);
+            if(String(password).length < 6) {
+                throw new AppErrors('Senha deve ter no mínimo 6 caracteres', 400);
+            }
+
+            if(password !== password_confirmation) {
+                throw new AppErrors('Senhas informadas não conferem!', 400);
+            }
+
         }
 
         const createUser = new CreateUserService();
@@ -92,7 +98,7 @@ class UserController {
         return response.status(200).send();
     }
 
-    public async ListAll(request: Request, response: Response): Promise <Response> {
+    public async listAll(request: Request, response: Response): Promise <Response> {
 
         const { enterprise } = request.params;        
 
@@ -101,6 +107,17 @@ class UserController {
         const users = await listAllProfileToEnterprise.execute(enterprise);
 
         return response.status(200).send(users);
+    }
+
+    public async delete(request: Request, response: Response): Promise<Response> {
+
+        const { id } = request.body;
+
+        const deleteUser = new DeleteUserService();
+
+        await deleteUser.execute(id);
+
+        return response.status(200).send();
     }
 }
 
