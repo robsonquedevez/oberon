@@ -12,7 +12,13 @@ class User {
     email: string;
 
     @Column()
-    password: string;
+    password?: string;
+
+    @Column()
+    token?: string;
+
+    @Column()
+    validate_token?: Date;
 
     @Column('boolean')
     administrator: boolean;

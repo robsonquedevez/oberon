@@ -25,7 +25,18 @@ export class CreateUser1631487132131 implements MigrationInterface {
                     },
                     {
                         name: 'password',
-                        type: 'varchar',                        
+                        type: 'varchar',
+                        isNullable: true                     
+                    },
+                    {
+                        name: 'token',
+                        type: 'varchar',
+                        isNullable: true
+                    },
+                    {
+                        name: 'validate_token',
+                        type: 'timestamp',
+                        isNullable: true
                     },
                     {
                         name: 'administrator',
