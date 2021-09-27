@@ -32,6 +32,7 @@ import { Form } from '@unform/web';
 import { useMapEvents, Marker, Polygon, Popup } from '@monsonjeremy/react-leaflet';
 import * as L from 'leaflet';
 import { v4 } from 'uuid';
+import { useSnackbar } from 'notistack';
 
 import api from '../../services/api';
 import { useAuth } from '../../hooks/Auth';
@@ -204,6 +205,7 @@ const Task: React.FC = () => {
     const classes = useStyles();
     const formRef = useRef<FormHandles>(null);
     const { user } = useAuth();
+    const { enqueueSnackbar } = useSnackbar();
     const [open, setOpen] = useState<boolean>(false);
     const [btnLoading, setBtnLoading] = useState<boolean>(false);
     const [openCoords, setOpenCoords] = useState<boolean>(false);
@@ -212,7 +214,7 @@ const Task: React.FC = () => {
     const [coordinatesMarker, setCoordinatesMarker] = useState<L.LatLng | null>(null);
     const [coordinatesRoundQuadrant, setCoordinatesRoundQuadrant] = useState<L.LatLng[]>([]);
     const [selectUser, setSelectUser] = useState<string | null>(null);
-    const [selectTaskType, setSelectTaskType] = useState<string | null>(null);
+    const [selectTaskType, setSelectTaskType] = useState<number | null>(null);
     const [taskTitle, setTaskTitle] = useState<string>('');
     const [startDate, setStartDate] = useState<string>('');
     const [endDate, setEndDate] = useState<string>('');
@@ -231,8 +233,41 @@ const Task: React.FC = () => {
         })()
     }, [user.enterprise]);
 
-    const handleSubmit = useCallback(() => {
+    const handleSubmit = useCallback( async () => {
         setBtnLoading(true);
+
+        var daysWeek = '';
+        
+        taskWeekDays.map(day => {
+            daysWeek += day+',';
+        });
+
+        const coordinates = coordinatesMarker ? coordinatesMarker : coordinatesRoundQuadrant;
+
+        try{
+            await api.post('/task', {                
+                type: selectTaskType,
+                title: taskTitle,
+                executing_user: selectUser,
+                enterprise: user.enterprise,
+                status_task: 0,
+                start_task: startDate,
+                end_task: endDate,
+                repeat: taskRepeat,
+                days_of_the_week: daysWeek,
+                finished: false,
+                coordinates                
+            })
+            setBtnLoading(false);
+            handleClearDialogTask();
+            enqueueSnackbar('Tarefa cadastrada com sucesso!', { variant: 'success' });
+        }catch(err){
+            
+            const msg = err.response.data? err.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
+
+            enqueueSnackbar(msg, { variant: 'error' });
+        }
+
         console.log(selectUser);
         console.log(selectTaskType);
         console.log(taskTitle);
@@ -249,7 +284,7 @@ const Task: React.FC = () => {
         setOpen(!open);
     }, [open]);
 
-    const handleCancelDialogTask = useCallback(() => {
+    const handleClearDialogTask = useCallback(() => {
         setSelectUser(null);
         setSelectTaskType(null);
         setTaskTitle('');
@@ -267,7 +302,7 @@ const Task: React.FC = () => {
     }, []);
 
     const handleChangeSelectTaskType = useCallback((event) => {
-        setSelectTaskType(event.target.value as string);
+        setSelectTaskType(event.target.value as number);
     }, []);
 
     const handleOpenCoords = useCallback(() => {
@@ -307,20 +342,20 @@ const Task: React.FC = () => {
                 
             >
                 {
-                    (selectTaskType !== null && selectTaskType === 'Quadrante') &&
+                    (selectTaskType !== null && selectTaskType === 2) &&
                     <AddQuadrant 
                         setCoordinates={setCoordinatesRoundQuadrant}
                     />
                 }
 
                 {
-                    (selectTaskType !== null && selectTaskType === 'Ronda') &&
+                    (selectTaskType !== null && selectTaskType === 1) &&
                     <AddRound 
                         setCoordinates={setCoordinatesRoundQuadrant}
                     />
                 }
                 {
-                    (selectTaskType !== null && selectTaskType === 'Ponto de chegada') &&
+                    (selectTaskType !== null && selectTaskType === 3) &&
                     <AddMarker 
                         setCoordinates={setCoordinatesMarker}
                     />
@@ -400,15 +435,15 @@ const Task: React.FC = () => {
                                     value={selectTaskType}
                                     style={{ height: 48 }}
                                 >
-                                    <MenuItem value={'Ronda'}>
+                                    <MenuItem value={1}>
                                         Ronda
                                     </MenuItem>
 
-                                    <MenuItem value={'Quadrante'}>
+                                    <MenuItem value={2}>
                                         Quadrante
                                     </MenuItem>
 
-                                    <MenuItem value={'Ponto de chegada'}>
+                                    <MenuItem value={3}>
                                         Ponto de chegada
                                     </MenuItem>
                                 </Select>
@@ -546,7 +581,7 @@ const Task: React.FC = () => {
                         
                         {
                             selectTaskType === null ? null :
-                            selectTaskType === 'Ponto de chegada' ?
+                            selectTaskType === 3 ?
                             (
                                 coordinatesMarker === null ? null :
                                     <Tooltip title="Ver no mapa">
@@ -573,7 +608,7 @@ const Task: React.FC = () => {
                             color='secondary'
                             type='button'
                             endIcon={ <Close />}
-                            onClick={handleCancelDialogTask}
+                            onClick={handleClearDialogTask}
                         >
                             Cancelar
                         </Button>
