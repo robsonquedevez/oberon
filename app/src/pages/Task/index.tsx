@@ -233,13 +233,26 @@ const Task: React.FC = () => {
         })()
     }, [user.enterprise]);
 
+    const handleClearDialogTask = useCallback(() => {
+        setSelectUser(null);
+        setSelectTaskType(null);
+        setTaskTitle('');
+        setStartDate('');
+        setEndDate('');
+        setTaskRepeat(false);
+        setTaskWeekDays([]);
+        setCoordinatesMarker(null);
+        setCoordinatesRoundQuadrant([]);
+        setOpen(!open);
+    }, [open]);
+
     const handleSubmit = useCallback( async () => {
         setBtnLoading(true);
 
         var daysWeek = '';
         
         taskWeekDays.map(day => {
-            daysWeek += day+',';
+            return daysWeek += day+',';
         });
 
         const coordinates = coordinatesMarker ? coordinatesMarker : coordinatesRoundQuadrant;
@@ -261,41 +274,31 @@ const Task: React.FC = () => {
             setBtnLoading(false);
             handleClearDialogTask();
             enqueueSnackbar('Tarefa cadastrada com sucesso!', { variant: 'success' });
-        }catch(err){
+        }catch(error: any){
             
-            const msg = err.response.data? err.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
+            const msg = error.response.data? error.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
 
             enqueueSnackbar(msg, { variant: 'error' });
         }
-
-        console.log(selectUser);
-        console.log(selectTaskType);
-        console.log(taskTitle);
-        console.log(startDate);
-        console.log(endDate);
-        console.log(taskRepeat);
-        console.log(taskWeekDays);
-        console.log(coordinatesMarker);
-        console.log(coordinatesRoundQuadrant);
         setBtnLoading(false);
-    }, [selectUser, selectTaskType, taskTitle, startDate, endDate, taskRepeat, taskWeekDays, coordinatesMarker, coordinatesRoundQuadrant]);
+    }, [ 
+        selectUser, 
+        selectTaskType, 
+        taskTitle, 
+        startDate, 
+        endDate, 
+        taskRepeat, 
+        taskWeekDays, 
+        coordinatesMarker, 
+        coordinatesRoundQuadrant,
+        enqueueSnackbar,
+        user,
+        handleClearDialogTask
+    ]);
 
     const handleOpenDialogTask = useCallback(() => {
         setOpen(!open);
-    }, [open]);
-
-    const handleClearDialogTask = useCallback(() => {
-        setSelectUser(null);
-        setSelectTaskType(null);
-        setTaskTitle('');
-        setStartDate('');
-        setEndDate('');
-        setTaskRepeat(false);
-        setTaskWeekDays([]);
-        setCoordinatesMarker(null);
-        setCoordinatesRoundQuadrant([]);
-        setOpen(!open);
-    }, [open]);
+    }, [open]);    
 
     const handleChangeSelectUser = useCallback((event) => {
         setSelectUser(event.target.value as string);

@@ -68,7 +68,7 @@ interface ISelectUserEdit {
     admin: boolean;
 }
 
-interface User {
+interface IUser {
     id: string;
     name: string;
     email: string;
@@ -83,7 +83,7 @@ const User: React.FC = () => {
     const [showDialogUser, setShowDialogUser] = useState<boolean>(false);
     const [showDialogCreateUser, setShowDialogCreateUser] = useState<boolean>(false);
     const [selectUserEdit, setSelectUserEdit] = useState<ISelectUserEdit | null >(null);
-    const [users, setUsers] = useState<User[]>([]);
+    const [users, setUsers] = useState<IUser[]>([]);
     const { enqueueSnackbar } = useSnackbar();
     const { user } = useAuth();
     const [update, setUpdate] = useState<boolean>(false);
@@ -160,7 +160,7 @@ const User: React.FC = () => {
             });
             enqueueSnackbar('Usuário excluido com sucesso!', { variant: 'success' });
             setUpdate(true); 
-        } catch (error) {
+        } catch (error: any) {
             setBtnLoading(false);            
 
             const msg = error.response ? error.response.data.message : 'Erro ao cadastrar novo usuário. Tente novamente.';
