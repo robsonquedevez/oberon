@@ -10,6 +10,7 @@ import Home from '../pages/Home';
 import Enterprise from '../pages/Enterprise';
 import User from '../pages/User';
 import Task from '../pages/Task';
+import Analysis from '../pages/Analysis';
 
 const Routes: React.FC = () => {
     return (
@@ -21,6 +22,7 @@ const Routes: React.FC = () => {
             <Route path='/enterprise' component={Enterprise} isPrivate/>
             <Route path='/user' component={User} isPrivate/>
             <Route path='/task' component={Task} isPrivate/>
+            <Route path='/analysis' component={Analysis} isPrivate/>
         </Switch>
     )
 }

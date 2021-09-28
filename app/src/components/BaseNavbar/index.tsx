@@ -247,9 +247,9 @@ const BaseNavbar: React.FC<NavBarProps> = ({ pageActive, children }) => {
 
             <ListItem 
                 button
-                className={ pageActive === 'analytics' ?
+                className={ pageActive === 'analysis' ?
                 clsx(classes.active) : '' } 
-                onClick={() => handlePushPage('analytics')}
+                onClick={() => handlePushPage('analysis')}
             >
                 <ListItemIcon>
                     <BarChart />
