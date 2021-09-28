@@ -98,7 +98,7 @@ const Enterprise: React.FC = () => {
             enqueueSnackbar('Dados da empresa atualizados com sucesso!', { variant: 'success' });
             setBtnLoading(false);
 
-        } catch (error) {
+        } catch (error: any) {
             setBtnLoading(false);
             if(error instanceof Yup.ValidationError) {
                 const errors = getValidationErrors(error);
