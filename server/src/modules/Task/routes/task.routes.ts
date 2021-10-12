@@ -8,7 +8,7 @@ const taskRouter = Router();
 
 taskRouter.post('/', ensureAuthenticated, taskController.create);
 taskRouter.put('/', ensureAuthenticated, taskController.update);
-taskRouter.get('/user', ensureAuthenticated, taskController.findTaskToExecuteUser);
+taskRouter.get('/user/:id', ensureAuthenticated, taskController.findTaskToExecuteUser);
 taskRouter.get('/enterprise', ensureAuthenticated, taskController.findAllTaskToEnterprise);
 
 export default taskRouter;

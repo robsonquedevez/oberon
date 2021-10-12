@@ -13,6 +13,20 @@ class FindTaskToExecuteUserService {
         const taskRepository = getRepository(Task);
 
         const tasks = await taskRepository.find({
+            select:[
+                "id",
+                "title",
+                "type",
+                "enterprise",
+                "finished", 
+                "start_task",
+                "end_task",
+                "repeat", 
+                "days_of_the_week", 
+                "status_task",
+                "executing_user",
+                "created_user"
+            ],
             where: {
                 executing_user
             }

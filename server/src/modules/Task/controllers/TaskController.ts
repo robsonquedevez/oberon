@@ -12,6 +12,7 @@ class TaskController {
 
         const {  
             type,
+            title,
             enterprise,
             executing_user,
             status_task,
@@ -27,6 +28,7 @@ class TaskController {
 
         const task = await createTask.execute({
             type,
+            title,
             created_user: user.id, 
             enterprise,
             executing_user,
@@ -47,6 +49,7 @@ class TaskController {
 
         const { 
             id,
+            title,
             executing_user,
             status_task,
             start_task,
@@ -60,6 +63,7 @@ class TaskController {
 
         const task = await updateTask.execute({
             id,
+            title,
             update_user: user.id, 
             executing_user,
             status_task,
@@ -75,13 +79,13 @@ class TaskController {
 
     public async findTaskToExecuteUser(request: Request, response: Response): Promise<Response> {       
 
-        const { executing_user } = request.body;
+        const { id } = request.params;
 
         const findTaskToExecuteUser = new FindTaskToExecuteUserService();
 
-        const tasks = await findTaskToExecuteUser.execute({ executing_user });
+        const tasks = await findTaskToExecuteUser.execute({ executing_user: id });
 
-        return response.status(200).json({ tasks });
+        return response.status(200).json(tasks);
     }
 
     public async findAllTaskToEnterprise(request: Request, response: Response): Promise<Response> {

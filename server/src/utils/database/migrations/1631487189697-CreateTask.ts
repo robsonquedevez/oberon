@@ -15,6 +15,10 @@ export class CreateTask1631487189697 implements MigrationInterface {
                         default: 'uuid_generate_v4()'
                     },
                     {
+                        name: 'title',
+                        type: 'varchar'
+                    },
+                    {
                         name: 'type',
                         type: 'integer'
                     },

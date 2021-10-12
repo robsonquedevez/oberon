@@ -7,6 +7,7 @@ import AppErrors from '../../../utils/errors/AppErrors';
 
 interface ITask {
     id: string;
+    title: string;
     update_user: string;
     executing_user: string;
     status_task: number;
@@ -21,6 +22,7 @@ class UpdateTaskService {
 
     public async execute({
         id,
+        title,
         update_user,
         executing_user,
         status_task,
@@ -87,6 +89,7 @@ class UpdateTaskService {
             task_id: task.id
         });
 
+        task.title = title;
         task.executing_user = executing_user;
         task.status_task = status_task;
         task.start_task = start_task;

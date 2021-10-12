@@ -12,6 +12,7 @@ interface LngLat {
 
 interface ITask {
     type: number;
+    title: string;
     created_user: string;
     enterprise: string;
     executing_user: string;
@@ -28,6 +29,7 @@ class CreateTaskService {
 
     public async execute({
         type,
+        title,
         created_user, 
         enterprise,
         executing_user,
@@ -70,6 +72,7 @@ class CreateTaskService {
 
         const task = taskRepository.create({
             type,
+            title,
             created_user,
             enterprise,
             executing_user,
