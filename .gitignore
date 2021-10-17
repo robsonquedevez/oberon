@@ -4,15 +4,16 @@
 server/.env
 server/ormconfig.json
 
-mobile/.expo/
-mobile/npm-debug.*
-mobile/*.jks
-mobile/*.p8
-mobile/*.p12
-mobile/*.key
-mobile/*.mobileprovision
-mobile/*.orig.*
-mobile/web-build/
+mobile_app/.expo/*
+mobile_app/.expo-shared/*
+mobile_app/npm-debug.*
+mobile_app/*.jks
+mobile_app/*.p8
+mobile_app/*.p12
+mobile_app/*.key
+mobile_app/*.mobileprovision
+mobile_app/*.orig.*
+mobile_app/web-build/*
 
 # macOS
 */.DS_Store
