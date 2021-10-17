@@ -85,5 +85,8 @@ export const ShowDetails = styled.div`
 
 export const DisplayMap = styled.div`
     width: 100%;
-    
+    border-radius: 10px;
+    border: 1px solid #CECECE;
+    padding: 1px;
+    margin-top: 10px;
 `;
