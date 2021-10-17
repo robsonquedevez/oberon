@@ -46,10 +46,10 @@ import {
     PopUpContent
 } from './styles';
 
-import QuadMarker from '../../assets/images/quadrantMarker.svg';
+import markerImage from '../../assets/images/quadrantMarker.svg';
 
 const MakerIcon = L.icon({
-    iconUrl: QuadMarker,
+    iconUrl: markerImage,
     iconSize: [18, 18],
 });
 
