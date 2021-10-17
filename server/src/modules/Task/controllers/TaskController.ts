@@ -3,6 +3,8 @@ import CreateTaskService from '../services/CreateTaskService';
 import UpdateTaskService from '../services/UpdateTaskService';
 import FindTaskToExecuteUserService from '../services/FindTaskToExecuteUserService';
 import FindAllTaskToEnterpriseService from '../services/FindAllTasktoEnterpriseService';
+import FindTask from '../services/FindTaskService';
+import FindTaskTodayToExecuteUserService from '../services/FindTaskTodayToExecuteUserService';
 
 class TaskController {
 
@@ -97,6 +99,29 @@ class TaskController {
         const tasks = await findAllTaskToEnterprise.execute({ enterprise });
 
         return response.status(200).json({ tasks });
+    }
+
+    public async findTask(request: Request, response: Response): Promise<Response> {
+        
+        const { id } = request.params;
+
+        const findTask = new FindTask();
+
+        const tasks = await findTask.execute({ id });
+
+        return response.status(200).json(tasks);
+
+    }
+
+    public async findTaskToDay(request: Request, response: Response): Promise<Response> {
+
+        const { id } = request.params;
+
+        const findTaskToDayToExecutingUser = new FindTaskTodayToExecuteUserService();
+
+        const tasks = await findTaskToDayToExecutingUser.execute({ id });
+
+        return response.status(200).json(tasks);
     }
 }
 

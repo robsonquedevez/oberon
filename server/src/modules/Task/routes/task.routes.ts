@@ -8,6 +8,8 @@ const taskRouter = Router();
 
 taskRouter.post('/', ensureAuthenticated, taskController.create);
 taskRouter.put('/', ensureAuthenticated, taskController.update);
+taskRouter.get('/:id', ensureAuthenticated, taskController.findTask);
+taskRouter.get('/user/today/:id', ensureAuthenticated, taskController.findTaskToDay);
 taskRouter.get('/user/:id', ensureAuthenticated, taskController.findTaskToExecuteUser);
 taskRouter.get('/enterprise', ensureAuthenticated, taskController.findAllTaskToEnterprise);
 
