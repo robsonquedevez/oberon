@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { StatusBar } from 'expo-status-bar';
 import { 
     StyleSheet, 
@@ -23,6 +23,7 @@ import api from "../services/api";
 interface IRouteParams {
     task: string;
 }
+
 interface ITask {    
     task: {
         id: string;
@@ -40,8 +41,9 @@ interface ITask {
     },
     coordinates: [
         {
-            lat: number;
-            lng: number;
+            id: string;
+            latitude: number;
+            longitude: number;
         }
     ]
 }
@@ -77,7 +79,8 @@ interface IPosition {
 const ExecutingTask: React.FC = () => {
     const navigation = useNavigation();
     const route = useRoute();
-    const [loading, setLoading] = useState<boolean>(false);
+    const [idTask, setIdTask] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(true);
     const [task, setTask] = useState<Task>();
     const [coordinates, setCoordinates] = useState<Coordinate[]>();
     const [currentPosition, setCurrentPosition] = useState<IPosition>();
@@ -89,6 +92,8 @@ const ExecutingTask: React.FC = () => {
         (
             async () => {
                 const { task } = route.params as IRouteParams;
+
+                setIdTask(task);
 
                 const response = await api.get(`/task/${task}`);
 
@@ -102,16 +107,16 @@ const ExecutingTask: React.FC = () => {
 
                 setTask(executingTask.task);
 
-                const createArrayCoordinates: Coordinate[] = [];
-
-                executingTask.coordinates.map(coord => {                    
+                let createArrayCoordinates: Coordinate[] = [];
+        
+                executingTask.coordinates.map(coord => {
                     createArrayCoordinates.push({ 
-                        id: Math.floor(Math.random()*(999-99+1)+99).toString(),
-                        latitude: coord.lat,  
-                        longitude: coord.lng,
+                        id: coord.id,
+                        latitude: coord.latitude,  
+                        longitude: coord.longitude,
                         concluded: false
-                    })
-                });
+                    })  
+                }); 
 
                 setCoordinates(createArrayCoordinates);
 
@@ -140,12 +145,13 @@ const ExecutingTask: React.FC = () => {
 
         coordinates?.map(coord => {
             if(
-                coord.latitude.toFixed(5) === latitude.toFixed(5) && 
-                coord.longitude.toFixed(5) === longitude.toFixed(5)
-            )
-            {
-                coord.concluded = true;
-                console.log('checked');
+                coord.latitude.toFixed(4) === latitude.toFixed(4) && 
+                coord.longitude.toFixed(4) === longitude.toFixed(4) &&
+                coord.concluded === false
+                )
+                {
+                    coord.concluded = true;
+                    console.log('checked: ', latitude.toFixed(6), longitude.toFixed(6), coord.id);
             }
         });
     }
@@ -169,7 +175,7 @@ const ExecutingTask: React.FC = () => {
             longitude.toFixed(5) !== execLng.toFixed(5)
         ) 
         {  
-            console.log('getLocation');
+            console.log('move: ', latitude.toFixed(5), longitude.toFixed(5));
 
             let data = {
                 latitude,
@@ -181,13 +187,24 @@ const ExecutingTask: React.FC = () => {
             checkedMarker(latitude, longitude);
         }
     }
-    
 
-    function handleFinishedTask(){
-        abortControl.abort();
+
+    async function handleFinishedTask () {
+        
         console.log(executing);
+
+        try {
+            await api.post('/task/executing', { 
+                id: idTask,  
+                coordinates: executing,
+                markers: coordinates
+            });
+            
+        } catch (error) {
+            Alert.alert('Erro', 'Erro ao finalizar tarefa');
+        }
         navigation.goBack();
-    }   
+    }
     
     return (
         <>
@@ -199,11 +216,11 @@ const ExecutingTask: React.FC = () => {
                     <Text style={styles.TextTopBar}>Oberon</Text>
                     {
                         loading ? <View /> :
-
                         <TouchableOpacity style={styles.ButtonStop} onPress={handleFinishedTask}>
-                            <Text style={styles.TextButtonStop} >Encerrar</Text>                  
+                            <Text style={styles.TextButtonStop} >Encerrar</Text>                                          
                             <Feather name='stop-circle' size={28} color='#C7173B' />
                         </TouchableOpacity>
+                       
                     }
                 </View>
 
