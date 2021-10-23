@@ -1,46 +1,35 @@
-import { getMongoRepository, getMongoManager } from "typeorm";
+import { getMongoManager, ObjectID } from "typeorm";
 import AppErrors from "../../../utils/errors/AppErrors";
 import Coordinate from '../schemas/Coordinate';
 
-interface ICoordinates {
+interface IPosition {
+    id: string;
     lng: string;
     lat: string;
 }
 
-interface ICoordsDocument {
-    _id: string;
+interface ICoordinates {
+    id: ObjectID;
     task: string;
-    coordinates: ICoordinates[];
+    coordinates: IPosition[];
 }
 
 class FindCoordinatesService {
 
-    public async execute(task: string): Promise<ICoordinates[]> {
+    public async execute(task: string): Promise<IPosition[]> {
 
-        const coordsRepository = getMongoRepository(Coordinate, 'mongo');
+        const coordsRepository = getMongoManager('mongo');
 
-        const coords = await coordsRepository.createCursor(
-            coordsRepository.find()
-        ).toArray() as ICoordsDocument[];
-
+        const coords = await coordsRepository.findOne(Coordinate, { task }, { select: [ 'coordinates' ] });
         
-        if(!coords[0]) {
+        if(!coords) {
             throw new AppErrors(
                 'Nehuma coordenada foi encontrada para essa tarefa',
                 400
             );            
         }
         
-        const taskCoord = coords.filter(coord => coord.task === task)[0];
-
-        if(!taskCoord) {
-            throw new AppErrors(
-                'Nehuma coordenada foi encontrada para essa tarefa',
-                400
-            );            
-        }
-        
-        return taskCoord.coordinates;
+        return coords.coordinates;
     }
 }
 

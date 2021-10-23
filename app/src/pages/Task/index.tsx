@@ -75,12 +75,18 @@ const useStyles = makeStyles(() => ({
     }
 }));
 
+interface ICoordinates {
+    id: string;
+    latitude: number;
+    longitude: number;
+}
+
 interface ICoordinatesMarker {
-    setCoordinates(coords: L.LatLng): void;
+    setCoordinates(coords: ICoordinates): void;
 }
 
 interface ICoordinatesRoundQuadrant {
-    setCoordinates(coords: L.LatLng[]): void;
+    setCoordinates(coords: ICoordinates[]): void;
 }
 
 interface User {
@@ -88,9 +94,9 @@ interface User {
     name: string;
 }
 
-function removeMarker(marker: L.LatLng, coordinates: L.LatLng[]) {
+function removeMarker(marker: string, coordinates: ICoordinates[]) {
      return coordinates.filter( 
-         position => position.lat !== marker.lat && position.lng !== marker.lng
+        position => position.id !== marker
     )
 }
 
@@ -99,9 +105,14 @@ const AddQuadrant: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) =>
 
     useMapEvents({
         click: (e) => {
-            if(positions.length < 20){
-                setPositions([ ...positions, e.latlng ]);
-                setCoordinates([ ...positions, e.latlng ]);
+            if(positions.length < 20) {
+                let position = {
+                    id: v4(),
+                    latitude: e.latlng.lat,
+                    longitude: e.latlng.lng
+                }
+                setPositions([ ...positions, position ]);
+                setCoordinates([ ...positions, position ]);
             }
         }
     });
@@ -111,10 +122,10 @@ const AddQuadrant: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) =>
     :
         ( 
             (positions.length < 3) ?
-                positions.map((element: L.LatLngLiteral) => (     
+                positions.map((position: ICoordinates) => (     
                     <Marker
-                        key={v4()}
-                        position={L.latLng(element)}
+                        key={position.id}
+                        position={L.latLng(position.latitude, position.longitude)}
                         icon={MakerIcon}
                     />
                 ))
@@ -135,9 +146,14 @@ const AddRound: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) => {
 
     useMapEvents({
         click: (e) => {
-            if(positions.length < 10){
-                setPositions([ ...positions, e.latlng ] )
-                setCoordinates([ ...positions, e.latlng ] )
+            if(positions.length < 15){
+                let position = {
+                    id: v4(),
+                    latitude: e.latlng.lat,
+                    longitude: e.latlng.lng
+                }
+                setPositions([ ...positions, position ] )
+                setCoordinates([ ...positions, position ] )
             }
         }
     });
@@ -147,24 +163,24 @@ const AddRound: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) => {
     :
     ( 
         
-        positions.map((element: L.LatLng) => (               
+        positions.map((position: ICoordinates) => (               
             <Marker
-                key={v4()}
-                position={L.latLng(element)}
+                key={position.id}
+                position={L.latLng(position.latitude, position.longitude)}
                 icon={MakerIcon}
                 
             >
                 <Popup>
                     <PopUpContent>
-                    <p>lat: {element.lat}</p>
-                    <p>lng: {element.lng}</p>
+                    <p>lat: {position.latitude}</p>
+                    <p>lng: {position.longitude}</p>
 
                     <Button
                     color='secondary'
                     onClick={
                         () => { 
-                            setPositions(removeMarker(element, positions));
-                            setCoordinates(removeMarker(element, positions));
+                            setPositions(removeMarker(position.id, positions));
+                            setCoordinates(removeMarker(position.id, positions));
                         }
                     }
                     >Remover</Button>
@@ -178,24 +194,29 @@ const AddRound: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) => {
 
 const AddMarker: React.FC<ICoordinatesMarker> = ({ setCoordinates }) => {
     
-    const  [position, setPosition] = useState<L.LatLng | null>(null);
+    const  [position, setPosition] = useState<ICoordinates | null>(null);
 
     useMapEvents({
         click: (e) => {
-            setPosition(L.latLng(e.latlng));
-            setCoordinates(L.latLng(e.latlng));
+            let posit = {
+                id: v4(),
+                latitude: e.latlng.lat,
+                longitude: e.latlng.lng
+            }
+            setPosition(posit);
+            setCoordinates(posit);
         }
     });
 
     return position === null ? null :  
         
     <Marker
-        position={position}
+        position={L.latLng(position.latitude, position.longitude)}
         icon={MakerIcon}      
     >
         <Popup>
-            <p>lat: {position.lat}</p>
-            <p>lng: {position.lng}</p>
+            <p>lat: {position.latitude}</p>
+            <p>lng: {position.longitude}</p>
         </Popup>
     </Marker>
     
@@ -211,8 +232,8 @@ const Task: React.FC = () => {
     const [openCoords, setOpenCoords] = useState<boolean>(false);
     const [users, setUsers] = useState<User[]>([]);
     
-    const [coordinatesMarker, setCoordinatesMarker] = useState<L.LatLng | null>(null);
-    const [coordinatesRoundQuadrant, setCoordinatesRoundQuadrant] = useState<L.LatLng[]>([]);
+    const [coordinatesMarker, setCoordinatesMarker] = useState<ICoordinates | null>(null);
+    const [coordinatesRoundQuadrant, setCoordinatesRoundQuadrant] = useState<ICoordinates[]>([]);
     const [selectUser, setSelectUser] = useState<string | null>(null);
     const [selectTaskType, setSelectTaskType] = useState<number | null>(null);
     const [taskTitle, setTaskTitle] = useState<string>('');

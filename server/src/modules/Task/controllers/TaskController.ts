@@ -5,6 +5,7 @@ import FindTaskToExecuteUserService from '../services/FindTaskToExecuteUserServi
 import FindAllTaskToEnterpriseService from '../services/FindAllTasktoEnterpriseService';
 import FindTask from '../services/FindTaskService';
 import FindTaskTodayToExecuteUserService from '../services/FindTaskTodayToExecuteUserService';
+import ExecutingTaskService from '../services/ExecutingTaskService';
 
 class TaskController {
 
@@ -122,6 +123,17 @@ class TaskController {
         const tasks = await findTaskToDayToExecutingUser.execute({ id });
 
         return response.status(200).json(tasks);
+    }
+
+    public async ExecutingTask(request: Request, response: Response): Promise<Response> {
+
+        const { id, coordinates, markers } = request.body;
+
+        const executingTask = new ExecutingTaskService();
+
+        await executingTask.execute({ id, coordinates, markers });
+
+        return response.status(200);
     }
 }
 

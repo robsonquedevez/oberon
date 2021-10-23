@@ -1,7 +1,6 @@
 import { getRepository } from "typeorm";
 import AppErrors from "../../../utils/errors/AppErrors";
 import Task from "../entities/Task";
-import Coordinate from "../schemas/Coordinate";
 import FindCoordinatesService from './FindCoordinatesService';
 
 interface IFindTask {
@@ -9,6 +8,7 @@ interface IFindTask {
 }
 
 interface ICoordinates {
+    id: string;
     lng: string;
     lat: string;
 }
@@ -61,7 +61,6 @@ class FindTask {
                 401
             );            
         }
-
 
         return {
             task,

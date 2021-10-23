@@ -1,4 +1,4 @@
-import { getRepository, getMongoRepository} from 'typeorm';
+import { getRepository, getMongoRepository } from 'typeorm';
 import { isBefore, isAfter } from 'date-fns';
 import Task from '../entities/Task';
 import verifyToTaskAlreadyExists from './VerifyToTaskAlreadyExists';
@@ -6,6 +6,7 @@ import AppErrors from '../../../utils/errors/AppErrors';
 import Coordinate from '../schemas/Coordinate';
 
 interface LngLat {
+    id: string;
     lng: string;
     lat: string;
 }

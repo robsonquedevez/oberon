@@ -6,6 +6,7 @@ const taskController = new TaskController();
 
 const taskRouter = Router();
 
+taskRouter.post('/executing', ensureAuthenticated, taskController.ExecutingTask);
 taskRouter.post('/', ensureAuthenticated, taskController.create);
 taskRouter.put('/', ensureAuthenticated, taskController.update);
 taskRouter.get('/:id', ensureAuthenticated, taskController.findTask);
