@@ -6,6 +6,7 @@ import FindAllTaskToEnterpriseService from '../services/FindAllTasktoEnterpriseS
 import FindTask from '../services/FindTaskService';
 import FindTaskTodayToExecuteUserService from '../services/FindTaskTodayToExecuteUserService';
 import ExecutingTaskService from '../services/ExecutingTaskService';
+import FindAnalysisTaskService from '../services/FindAnalysisTaskService';
 
 class TaskController {
 
@@ -134,6 +135,17 @@ class TaskController {
         await executingTask.execute({ id, coordinates, markers });
 
         return response.status(200);
+    }
+
+    public async FindAnalysis(request: Request, response: Response): Promise<Response> {
+
+        const { id } = request.params;
+
+        const findAnalysisTask = new FindAnalysisTaskService();
+
+        const tasks = await findAnalysisTask.execute({ id });
+
+        return response.status(200).json(tasks);
     }
 }
 

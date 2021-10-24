@@ -13,6 +13,19 @@ interface IExecuteCoordinates {
     concluded: boolean;
 }
 
+interface IMarker {
+    id: string;
+    latitude: number;
+    longitude: number;
+    concluded: boolean;
+}
+
+export interface IExecuting {
+    date: string;
+    coordinates: IExecuteCoordinates[];
+    markers: IMarker[];
+}
+
 @Entity('coordinates')
 class Coordinate {
 
@@ -26,12 +39,7 @@ class Coordinate {
     coordinates: LngLat[];
 
     @Column()
-    executing?: [
-        {
-            date: string;
-            position: IExecuteCoordinates[]
-        }
-    ];
+    executing: IExecuting[];
 
 }
 

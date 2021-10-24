@@ -91,7 +91,8 @@ class CreateTaskService {
 
         const coordinatesTask = coordinatesRepository.create({
             task: task.id,
-            coordinates 
+            coordinates,
+            executing: []
         });
 
         await coordinatesRepository.save(coordinatesTask);
