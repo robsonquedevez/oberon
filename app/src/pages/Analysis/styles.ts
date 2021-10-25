@@ -81,6 +81,14 @@ export const ShowDetails = styled.div`
     &::-webkit-scrollbar {
         display: none;
     }
+
+    h6 {
+        font-size: 1rem;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 400;
+        margin-top: 1rem;
+        color: #A1A1A1;
+    }
 `;
 
 export const DisplayMap = styled.div`

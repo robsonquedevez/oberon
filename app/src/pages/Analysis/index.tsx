@@ -17,15 +17,23 @@ import {
     TextField,
     FormControlLabel,
     Checkbox,
-    FormGroup
+    FormGroup,
+    TableContainer,
+    Table,
+    TableHead,
+    TableCell,
+    TableRow,
+    TableBody
 } from '@material-ui/core';
 import {
-    Search as SearchIcon
+    Search as SearchIcon,
+    Close,
+    Check
 } from '@material-ui/icons';
 import { useSnackbar } from 'notistack'
 import { useMapEvents, Marker, Polygon, Popup } from '@monsonjeremy/react-leaflet';
 import * as L from 'leaflet';
-import { v4 } from 'uuid';
+import { format } from 'date-fns';
 
 import api from '../../services/api';
 import {
@@ -44,7 +52,9 @@ import {
     DisplayMap
 } from './styles';
 
-import markerImage from '../../assets/images/quadrantMarker.svg';
+
+import marker from '../../assets/images/Marker.svg';
+import markerSuccess from '../../assets/images/MarkerSuccess.svg';
 
 const useStyles = makeStyles((theme) => ({
     paperContent: {
@@ -78,6 +88,12 @@ const useStyles = makeStyles((theme) => ({
     },
     accord: {
         width: '100%',
+    },
+    iconChecked: {
+        color: '#00e676'
+    },
+    iconNotChecked: {
+        color: '#ff3d00'
     }
 }));
 
@@ -108,15 +124,42 @@ interface ITask {
     },
     coordinates: [
         {
-            lat: number;
-            lng: number;
+            id: string;
+            latitude: number;
+            longitude: number;
+        }
+    ],
+    executing: [
+        {
+            data: string;
+            coordinates: [{
+                latitude: number;
+                longitude: number;
+                timestamp: number;
+            }],
+            markers:  [{
+                id: string;
+                latitude: number;
+                longitude: number;
+                concluded: boolean;
+            }] 
         }
     ]
 }
 
-const MakerIcon = L.icon({
-    iconUrl: markerImage,
-    iconSize: [18, 18],
+interface ICoordPoligan {
+    lat: number;
+    lng: number;
+}
+
+const MarkerIcon = L.icon({
+    iconUrl: marker,
+    iconSize: [20, 20],
+});
+
+const MarkerSuccessIcon = L.icon({
+    iconUrl: markerSuccess,
+    iconSize: [20, 20],
 });
 
 const Analysis: React.FC = () => {
@@ -143,7 +186,7 @@ const Analysis: React.FC = () => {
                     setUsers(response.data);
                 })
                 .catch((error: any) => {
-                    const msg = error.response.data? error.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
+                    const msg = error.response? error.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
 
                     enqueueSnackbar(msg, { variant: 'error' });
                 })
@@ -159,7 +202,7 @@ const Analysis: React.FC = () => {
             setListTask(response.data);
         })
         .catch((error: any) => {
-            const msg = error.response.data? error.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
+            const msg = error.response? error.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
 
             enqueueSnackbar(msg, { variant: 'error' });
         })
@@ -174,20 +217,19 @@ const Analysis: React.FC = () => {
     const handleSubmit = useCallback( async () => {
         setBtnLoading(true);
 
-        api.get(`/task/${taskSelect}`)
+        api.get(`/task/analysis/${taskSelect}`)
         .then(response => {
             setTask(response.data);
             setBtnLoading(false);
         })
         .catch((error: any) => {
-            const msg = error.response.data? error.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
+            const msg = error.response? error.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
 
             enqueueSnackbar(msg, { variant: 'error' });
             setBtnLoading(false);
         })
 
     }, [enqueueSnackbar, taskSelect]);
-
 
     return (
         <BaseNavbar pageActive='analysis' > 
@@ -276,7 +318,7 @@ const Analysis: React.FC = () => {
                     <ShowDetails>
                         <Accordion className={classes.accord}>
                             <AccordionSummary>
-                                <TextDetail> + detalhes da tarefa: {task.task.title} </TextDetail>
+                                <TextDetail>Detalhes da Tarefa: {task.task.title} </TextDetail>
                             </AccordionSummary>
                             <AccordionDetails>
 
@@ -312,7 +354,7 @@ const Analysis: React.FC = () => {
                                         name='start_task'
                                         type='text'
                                         className={classes.textField}
-                                        value={task.task.start_task}      
+                                        value={format(new Date(task.task.start_task), 'dd/MM/yyyy hh:mm:ss')}      
                                         disabled                       
                                     />
 
@@ -322,7 +364,7 @@ const Analysis: React.FC = () => {
                                         name='end_task'
                                         type='text'
                                         className={classes.textField}
-                                        value={task.task.end_task}
+                                        value={format(new Date(task.task.end_task), 'dd/MM/yyyy hh:mm:ss')}
                                         disabled
                                     />
 
@@ -412,27 +454,114 @@ const Analysis: React.FC = () => {
                                     />                            
 
                                     </FormGroup>
+
+                                    <h6>{task.coordinates.length} ponto{task.coordinates.length > 0 ? 's': ''} criado{task.coordinates.length > 0 ? 's': ''} no mapa</h6>
                                 </Form>
+                            </AccordionDetails>
+                        </Accordion>
+                        <Accordion className={classes.accord}>
+                            <AccordionSummary>
+                                <TextDetail> Coordenadas da tarefa: {task.task.title} </TextDetail>
+                            </AccordionSummary>
+                            <AccordionDetails>
+
+                                <TableContainer component={Paper} >
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>ID</TableCell>
+                                                <TableCell>Latitude</TableCell>
+                                                <TableCell>Longitude</TableCell>
+                                            </TableRow>
+                                        </TableHead>
+                                        <TableBody>
+                                            {
+                                                task.coordinates.map(coordinate => (
+                                                    <TableRow key={coordinate.id}>
+                                                        <TableCell>{coordinate.id}</TableCell>
+                                                        <TableCell>{coordinate.latitude}</TableCell>
+                                                        <TableCell>{coordinate.longitude}</TableCell>
+                                                    </TableRow>
+                                                ))
+                                            }
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+
+                            </AccordionDetails>
+                        </Accordion>
+                        <Accordion className={classes.accord}>
+                            <AccordionSummary>
+                                <TextDetail> Execução da tarefa: {task.task.title} </TextDetail>
+                            </AccordionSummary>
+                            <AccordionDetails>
+
+                                {task.executing.map(execute => (
+
+                                    <Accordion className={classes.accord} key={execute.data}>
+                                    <AccordionSummary>
+                                        <TextDetail> Realizado em: { format(new Date(execute.data), 'dd/MM/yyyy') } </TextDetail>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+
+                                        <TableContainer component={Paper} >
+                                            <Table>
+                                                <TableHead>
+                                                    <TableRow>
+                                                        <TableCell>ID</TableCell>
+                                                        <TableCell>Latitude</TableCell>
+                                                        <TableCell>Longitude</TableCell>
+                                                        <TableCell>Concluído</TableCell>
+                                                    </TableRow>
+                                                </TableHead>
+                                                <TableBody>
+                                                    {
+                                                        execute.markers.map(marker => (
+                                                            <TableRow key={marker.id}>
+                                                                <TableCell>{marker.id}</TableCell>
+                                                                <TableCell>{marker.latitude}</TableCell>
+                                                                <TableCell>{marker.longitude}</TableCell>
+                                                                <TableCell>
+                                                                    { 
+                                                                        marker.concluded 
+                                                                        ? <Check className={classes.iconChecked} /> 
+                                                                        : <Close className={classes.iconNotChecked} /> 
+                                                                    }
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        ))
+                                                    }
+                                                </TableBody>
+                                            </Table>
+                                        </TableContainer>
+
+                                    </AccordionDetails>
+                                    </Accordion>
+
+                                ))}
+
                             </AccordionDetails>
                         </Accordion>
                         
                         <DisplayMap>
                             <Map
-                                initialPosition={[task.coordinates[0].lat, task.coordinates[0].lng]}  
+                                initialPosition={[task.coordinates[0].latitude, task.coordinates[0].longitude]}  
                                 zoomScroll={false}    
                             >
                             
                             {
                                 task.task.type === 2 
                                 ?
-                                    <Polygon
-                                        positions={task.coordinates}                                        
-                                    />
+                                    // <Polygon
+                                    //     positions={task.coordinates as ICoordPoligan[]}                                        
+                                    // />
+
+                                    null
                                 :
                                     task.coordinates.map(coord => (
                                         <Marker
-                                            icon={MakerIcon}
-                                            position={coord}
+                                            icon={MarkerIcon}
+                                            position={L.latLng(coord.latitude, coord.longitude)}
                                         />
                                     ))
                             }
