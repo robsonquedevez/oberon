@@ -189,21 +189,28 @@ const ExecutingTask: React.FC = () => {
     }
 
 
-    async function handleFinishedTask () {
+    async function handleFinishedTask() {
         
-        console.log(executing);
-
-        try {
-            await api.post('/task/executing', { 
-                id: idTask,  
-                coordinates: executing,
-                markers: coordinates
-            });
-            
-        } catch (error) {
+        console.log('Finished');
+       
+        api.post('/task/executing', { 
+            id: idTask,  
+            coordinates: executing,
+            markers: coordinates
+        })
+        .then(response => {
+            console.log(response.data);
+            navigation.goBack();
+        })
+        .catch(error => {
+            console.log(error);
             Alert.alert('Erro', 'Erro ao finalizar tarefa');
-        }
-        navigation.goBack();
+            navigation.goBack();
+        })
+        .finally(() => {
+            console.log('goback');
+            navigation.goBack();
+        })
     }
     
     return (
