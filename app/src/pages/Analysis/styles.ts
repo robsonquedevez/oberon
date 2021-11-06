@@ -91,10 +91,20 @@ export const ShowDetails = styled.div`
     }
 `;
 
-export const DisplayMap = styled.div`
-    width: 100%;
-    border-radius: 10px;
-    border: 1px solid #CECECE;
-    padding: 1px;
-    margin-top: 10px;
+export const MapLink = styled.div`
+    min-width: 130px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    font-size: 1.1rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    margin-top: 1rem;
+
+    &:hover {
+        color: #3f51b5;
+        cursor: pointer;
+    }
 `;

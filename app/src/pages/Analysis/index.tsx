@@ -23,15 +23,22 @@ import {
     TableHead,
     TableCell,
     TableRow,
-    TableBody
+    TableBody,
+    Dialog,
+    AppBar,
+    Toolbar,
+    IconButton,
+    Slide,
 } from '@material-ui/core';
+import { TransitionProps } from '@material-ui/core/transitions'
 import {
     Search as SearchIcon,
     Close,
-    Check
+    Check,
+    OpenInNew
 } from '@material-ui/icons';
 import { useSnackbar } from 'notistack'
-import { useMapEvents, Marker, Polygon, Popup } from '@monsonjeremy/react-leaflet';
+import { useMapEvents, Marker, Popup } from '@monsonjeremy/react-leaflet';
 import * as L from 'leaflet';
 import { format } from 'date-fns';
 
@@ -49,7 +56,7 @@ import {
     TextDetail,
     InputGroup,
     ShowDetails,
-    DisplayMap
+    MapLink
 } from './styles';
 
 
@@ -84,7 +91,9 @@ const useStyles = makeStyles((theme) => ({
         color: '#000',
     },
     textField: {
-        width: 285,
+        width: '100%',
+        marginLeft: 10,      
+        marginRight: 10,
     },
     accord: {
         width: '100%',
@@ -94,8 +103,24 @@ const useStyles = makeStyles((theme) => ({
     },
     iconNotChecked: {
         color: '#ff3d00'
-    }
+    },
+    accordDetailsBody: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'flex-start'
+    },
+    appBar: {
+        position: 'relative',
+      },
 }));
+
+const Transition = React.forwardRef(function Transition(
+    props: TransitionProps & { children?: React.ReactElement },
+    ref: React.Ref<unknown>,
+  ) {
+    return <Slide direction="up" ref={ref} {...props} />;
+  });
 
 interface IUser {
     id: string;
@@ -154,7 +179,7 @@ interface ICoordPoligan {
 
 const MarkerIcon = L.icon({
     iconUrl: marker,
-    iconSize: [20, 20],
+    iconSize: [18, 18],
 });
 
 const MarkerSuccessIcon = L.icon({
@@ -172,6 +197,10 @@ const Analysis: React.FC = () => {
     const [task, setTask] = useState<ITask | null>(null);
     const { enqueueSnackbar } = useSnackbar();
     const [btnLoading, setBtnLoading] = useState<boolean>(false);
+    const [searchStartDate, setSearchStartDate] = useState<string>('');
+    const [searchEndDate, setSearchEndDate] = useState<string>('');
+    const [analysisType, setAnalysisType] = useState<number>(0);
+    const [openMapMarkers, setOpenMapMarkers] = useState<boolean>(false);
 
     const [userSelect, setUserSelect] = useState<string | null>(null);
     const [taskSelect, setTaskSelect] = useState<string | null>(null);
@@ -193,6 +222,10 @@ const Analysis: React.FC = () => {
             }
         )()
     }, [user.enterprise, enqueueSnackbar]);
+
+    const handleShowMapMarkers = useCallback(() => {
+        setOpenMapMarkers(!openMapMarkers);
+    }, [openMapMarkers]);
 
     const handleChangeSelectUser = useCallback( async (event) => {
         setUserSelect(event.target.value as string);
@@ -230,6 +263,18 @@ const Analysis: React.FC = () => {
         })
 
     }, [enqueueSnackbar, taskSelect]);
+
+    const handleSearchStartDate = useCallback((event) => {
+        setSearchStartDate(event.target.value as string);
+    }, []);
+
+    const handleSearchEndDate = useCallback((event) => {
+        setSearchEndDate(event.target.value as string);
+    }, []);
+
+    const handleChangeAnalysisType = useCallback((event) => {
+        setAnalysisType(Number(event.target.value as string));
+    }, []);
 
     return (
         <BaseNavbar pageActive='analysis' > 
@@ -291,6 +336,54 @@ const Analysis: React.FC = () => {
 
                                 </Select>
                             </FormControl>
+
+                            <FormControl className={classes.selectForm}>
+                                <InputLabel id='label-select-task-type' >Tipo</InputLabel>
+                                <Select
+                                    labelId='label-select-task-type'
+                                    input={<SelectInput />}
+                                    name='type'
+                                    variant='standard'
+                                    onChange={handleChangeAnalysisType}
+                                    value={analysisType}
+                                    style={{ height: 48 }}
+                                >
+                                    <MenuItem value={0}>
+                                        Diário
+                                    </MenuItem>
+
+                                    <MenuItem value={1}>
+                                        Período
+                                    </MenuItem>
+                                </Select>
+                            </FormControl>
+
+                            <TextField
+                                label='Início'
+                                name='start_task'
+                                type='date'
+                                variant='filled'
+                                className={classes.textField}
+                                onChange={handleSearchStartDate}
+                                value={searchStartDate}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}                              
+                            />
+
+                            <TextField
+                                label='Fim'
+                                name='start_task'
+                                type='date'
+                                variant='filled'
+                                className={classes.textField}
+                                onChange={handleSearchEndDate}
+                                value={searchEndDate}
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                disabled={analysisType === 0 ? true : false}                            
+                            />
 
                             <Button
                                 variant="contained"
@@ -461,9 +554,14 @@ const Analysis: React.FC = () => {
                         </Accordion>
                         <Accordion className={classes.accord}>
                             <AccordionSummary>
-                                <TextDetail> Coordenadas da tarefa: {task.task.title} </TextDetail>
+                                <TextDetail> Pontos definidos da tarefa </TextDetail>
                             </AccordionSummary>
-                            <AccordionDetails>
+                            <AccordionDetails className={classes.accordDetailsBody}>
+                                
+                                <MapLink onClick={handleShowMapMarkers}>
+                                    ver no mapa
+                                    <OpenInNew />
+                                </MapLink>
 
                                 <TableContainer component={Paper} >
                                     <Table>
@@ -543,32 +641,54 @@ const Analysis: React.FC = () => {
                             </AccordionDetails>
                         </Accordion>
                         
-                        <DisplayMap>
+                        <Dialog
+                            fullScreen
+                            open={openMapMarkers}
+                            onClose={handleShowMapMarkers}
+                            TransitionComponent={Transition}
+                        >
+                            <AppBar className={classes.appBar}>
+                                <Toolbar>
+                                    <IconButton
+                                        edge='start'
+                                        color='inherit'
+                                        onClick={handleShowMapMarkers}
+                                        aria-label='fechar'
+                                    >
+                                        <Close />
+                                    </IconButton>
+                                </Toolbar>
+                            </AppBar>
+
                             <Map
                                 initialPosition={[task.coordinates[0].latitude, task.coordinates[0].longitude]}  
                                 zoomScroll={false}    
                             >
                             
-                            {
-                                task.task.type === 2 
-                                ?
-                                    // <Polygon
-                                    //     positions={task.coordinates as ICoordPoligan[]}                                        
-                                    // />
+                            <Marker 
+                                icon={MarkerIcon}
+                                position={{
+                                    lat: -22.483122359313782,
+                                    lng: -47.472690939903266
+                                }}
+                            />
 
-                                    null
-                                :
-                                    task.coordinates.map(coord => (
-                                        <Marker
-                                            icon={MarkerIcon}
-                                            position={L.latLng(coord.latitude, coord.longitude)}
-                                        />
-                                    ))
-                            }
+                            {/* {
+                               
+                                task.coordinates.map(coord => (
+                                    <Marker
+                                        icon={MarkerSuccessIcon}
+                                        position={L.latLng(coord.latitude, coord.longitude)}
+                                    />
+                                ))
+                            } */}
 
                             </Map>
-                        </DisplayMap>
+
+                        </Dialog>
+
                     </ShowDetails>
+
                 }
 
             </Container>
