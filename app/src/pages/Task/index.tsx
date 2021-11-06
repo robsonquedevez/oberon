@@ -463,13 +463,13 @@ const Task: React.FC = () => {
                                         Ronda
                                     </MenuItem>
 
-                                    <MenuItem value={2}>
+                                    {/* <MenuItem value={2}>
                                         Quadrante
                                     </MenuItem>
 
                                     <MenuItem value={3}>
                                         Ponto de chegada
-                                    </MenuItem>
+                                    </MenuItem> */}
                                 </Select>
                             </FormControl>
 
