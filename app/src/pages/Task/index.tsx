@@ -77,6 +77,7 @@ const useStyles = makeStyles(() => ({
 
 interface ICoordinates {
     id: string;
+    name?: string;
     latitude: number;
     longitude: number;
 }
@@ -100,49 +101,68 @@ function removeMarker(marker: string, coordinates: ICoordinates[]) {
     )
 }
 
-const AddQuadrant: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) => {
-    const  [positions, setPositions] = useState<any>([]);
+// const AddQuadrant: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) => {
+//     const  [positions, setPositions] = useState<any>([]);
 
-    useMapEvents({
-        click: (e) => {
-            if(positions.length < 20) {
-                let position = {
-                    id: v4(),
-                    latitude: e.latlng.lat,
-                    longitude: e.latlng.lng
-                }
-                setPositions([ ...positions, position ]);
-                setCoordinates([ ...positions, position ]);
-            }
-        }
-    });
+//     useMapEvents({
+//         click: (e) => {
+//             if(positions.length < 20) {
+//                 let position = {
+//                     id: v4(),
+//                     latitude: e.latlng.lat,
+//                     longitude: e.latlng.lng
+//                 }
+//                 setPositions([ ...positions, position ]);
+//                 setCoordinates([ ...positions, position ]);
+//             }
+//         }
+//     });
 
-    return (positions.length === 0) ? 
-        null 
-    :
-        ( 
-            (positions.length < 3) ?
-                positions.map((position: ICoordinates) => (     
-                    <Marker
-                        key={position.id}
-                        position={L.latLng(position.latitude, position.longitude)}
-                        icon={MakerIcon}
-                    />
-                ))
-            :
-            <Polygon
-                positions={(positions)}
-                pathOptions={{
-                    color: 'purple'
-                }}
+//     return (positions.length === 0) ? 
+//         null 
+//     :
+//         ( 
+//             (positions.length < 3) ?
+//                 positions.map((position: ICoordinates) => (     
+//                     <Marker
+//                         key={position.id}
+//                         position={L.latLng(position.latitude, position.longitude)}
+//                         icon={MakerIcon}
+//                     />
+//                 ))
+//             :
+//             <Polygon
+//                 positions={(positions)}
+//                 pathOptions={{
+//                     color: 'purple'
+//                 }}
                 
-            />
-        )
+//             />
+//         )
     
-}
+// }
 
 const AddRound: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) => {
-    const  [positions, setPositions] = useState<any>([]);
+    const [positions, setPositions] = useState<ICoordinates[] | any>([]);
+    const [coordName, setCoordName] = useState<string>('');
+
+    const handleChangeName = useCallback((event) => {
+        setCoordName(event.target.value as string)
+    }, []);
+
+    const handleSubmitMarker = useCallback((id: string) => {
+        positions.map((position: { id: string; name: string; }) => {
+            if(position.id === id) {
+                position.name = coordName;
+            }
+            return position;
+        });
+
+        setPositions(positions);
+
+        setCoordName('');
+
+    }, [coordName, positions]);
 
     useMapEvents({
         click: (e) => {
@@ -175,15 +195,44 @@ const AddRound: React.FC<ICoordinatesRoundQuadrant> = ({ setCoordinates }) => {
                     <p>lat: {position.latitude}</p>
                     <p>lng: {position.longitude}</p>
 
-                    <Button
-                    color='secondary'
-                    onClick={
-                        () => { 
-                            setPositions(removeMarker(position.id, positions));
-                            setCoordinates(removeMarker(position.id, positions));
-                        }
+                    {!position.name ? 
+                        <div>
+                            <TextField
+                                variant='outlined'
+                                label='Nome'
+                                name='coord_name'
+                                type='text'
+                                onChange={handleChangeName}
+                                value={coordName}
+                            />
+
+                            <Button
+                                color='primary'
+                                onClick={
+                                    () => handleSubmitMarker(position.id)
+                                }
+                            >
+                                Salvar
+                            </Button>
+                        </div>
+                        :
+                        <p>{position.name}</p>
                     }
-                    >Remover</Button>
+
+                    
+
+                    <Button
+                        color='secondary'
+                        onClick={
+                            () => { 
+                                setPositions(removeMarker(position.id, positions));
+                                setCoordinates(removeMarker(position.id, positions));
+                            }
+                        }
+                    >
+                        Remover
+                    </Button>
+
                     </PopUpContent>
                 </Popup>
             </Marker>
@@ -367,9 +416,10 @@ const Task: React.FC = () => {
             >
                 {
                     (selectTaskType !== null && selectTaskType === 2) &&
-                    <AddQuadrant 
-                        setCoordinates={setCoordinatesRoundQuadrant}
-                    />
+                    // <AddQuadrant 
+                    //     setCoordinates={setCoordinatesRoundQuadrant}
+                    // />
+                    null
                 }
 
                 {
