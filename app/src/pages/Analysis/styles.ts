@@ -73,8 +73,10 @@ export const ShowDetails = styled.div`
     justify-content: flex-start;
     align-items: center;
     overflow-y: scroll;
-    max-height: 350px;
-    
+    max-height: Calc(100vh - 20rem);
+    margin-top: 10px;
+    padding-top: 10px;
+
     -ms-overflow-style: none;
     scrollbar-width: none;
 
@@ -92,13 +94,13 @@ export const ShowDetails = styled.div`
 `;
 
 export const MapLink = styled.div`
-    min-width: 130px;
+    max-width: 130px;
     margin-bottom: 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
     margin-top: 1rem;
