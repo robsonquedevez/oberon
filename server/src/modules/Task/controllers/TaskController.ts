@@ -139,11 +139,13 @@ class TaskController {
 
     public async FindAnalysis(request: Request, response: Response): Promise<Response> {
 
-        const { id } = request.params;
+        const { id, type, start, end } = request.params;
+
+        console.log(id, type, start, end);
 
         const findAnalysisTask = new FindAnalysisTaskService();
 
-        const tasks = await findAnalysisTask.execute({ id });
+        const tasks = await findAnalysisTask.execute({ id, type, startDate: start, endDate: end });
 
         return response.status(200).json(tasks);
     }

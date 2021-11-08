@@ -10,7 +10,7 @@ taskRouter.post('/executing', ensureAuthenticated, taskController.ExecutingTask)
 taskRouter.post('/', ensureAuthenticated, taskController.create);
 taskRouter.put('/', ensureAuthenticated, taskController.update);
 taskRouter.get('/:id', ensureAuthenticated, taskController.findTask);
-taskRouter.get('/analysis/:id', ensureAuthenticated, taskController.FindAnalysis);
+taskRouter.get('/analysis/:id/:type/:start/:end', ensureAuthenticated, taskController.FindAnalysis);
 taskRouter.get('/user/today/:id', ensureAuthenticated, taskController.findTaskToDay);
 taskRouter.get('/user/:id', ensureAuthenticated, taskController.findTaskToExecuteUser);
 taskRouter.get('/enterprise', ensureAuthenticated, taskController.findAllTaskToEnterprise);

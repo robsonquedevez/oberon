@@ -2,6 +2,7 @@ import {  Entity, Column, ObjectIdColumn, ObjectID } from "typeorm";
 
 interface LngLat  {
     id: string;
+    name: string;
     lng: string;
     lat: string;
 }
@@ -15,13 +16,15 @@ interface IExecuteCoordinates {
 
 interface IMarker {
     id: string;
+    name: string;
     latitude: number;
     longitude: number;
     concluded: boolean;
+    datetime: number;
 }
 
 export interface IExecuting {
-    date: string;
+    data: string;
     coordinates: IExecuteCoordinates[];
     markers: IMarker[];
 }

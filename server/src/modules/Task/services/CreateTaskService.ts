@@ -7,6 +7,7 @@ import Coordinate from '../schemas/Coordinate';
 
 interface LngLat {
     id: string;
+    name: string;
     lng: string;
     lat: string;
 }

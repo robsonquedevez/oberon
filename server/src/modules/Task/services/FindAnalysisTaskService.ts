@@ -2,9 +2,13 @@ import { getMongoManager, getRepository } from "typeorm";
 import AppErrors from "../../../utils/errors/AppErrors";
 import Task from "../entities/Task";
 import Coordinate, { IExecuting } from "../schemas/Coordinate";
+import { isEqual, format, getTime } from 'date-fns';
 
 interface IFindTask {
     id: string;
+    type: string;
+    startDate: string;
+    endDate: string;
 }
 
 interface ICoordinate {
@@ -21,7 +25,7 @@ interface IResponse {
 
 class FindAnalysisTaskService {
 
-    public async execute({ id }: IFindTask): Promise<IResponse>{
+    public async execute({ id, type, startDate, endDate }: IFindTask): Promise<IResponse>{
 
         const taskRepository = getRepository(Task);
 
@@ -47,7 +51,7 @@ class FindAnalysisTaskService {
 
         const coordsRepository = getMongoManager('mongo');
 
-        const coordinates = await coordsRepository.findOne(Coordinate, { task: id });
+        const coordinates = await coordsRepository.findOne(Coordinate, { task: id } );
 
         if(!coordinates) {
             throw new AppErrors(
@@ -63,10 +67,32 @@ class FindAnalysisTaskService {
             );            
         }
 
+        if(type === '0' || startDate === 'none' ){
+            throw new AppErrors(
+                'Necessário informada data',
+                401
+            ); 
+        }
+
+        let findCoordinateDate = null;
+
+        if(type === '1') {
+            findCoordinateDate = coordinates.executing.filter(coord => {
+                console.log(coord.data, startDate);
+                if(isEqual(
+                    getTime(new Date(coord.data)), 
+                    getTime(new Date(startDate))
+                )) {
+                    return coord;
+                }
+            })
+        }
+
+
         return {
             task,
-            coordinates:  coordinates.coordinates,
-            executing: coordinates.executing
+            coordinates: coordinates.coordinates,
+            executing: findCoordinateDate ? findCoordinateDate : coordinates.executing
         }        
     }
 }
