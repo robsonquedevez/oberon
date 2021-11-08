@@ -42,6 +42,7 @@ interface ITask {
     coordinates: [
         {
             id: string;
+            name: string;
             latitude: number;
             longitude: number;
         }
@@ -65,9 +66,11 @@ interface Task {
 
 interface Coordinate {
     id: string;
+    name: string;
     latitude: number;
     longitude: number;
     concluded: boolean;
+    datetime: number;
 }
 
 interface IPosition {
@@ -112,9 +115,11 @@ const ExecutingTask: React.FC = () => {
                 executingTask.coordinates.map(coord => {
                     createArrayCoordinates.push({ 
                         id: coord.id,
+                        name: coord.name,
                         latitude: coord.latitude,  
                         longitude: coord.longitude,
-                        concluded: false
+                        concluded: false,
+                        datetime: 0
                     })  
                 }); 
 
@@ -141,7 +146,7 @@ const ExecutingTask: React.FC = () => {
         )()
     }, []);
 
-    function checkedMarker(latitude: number, longitude: number): void {
+    function checkedMarker(latitude: number, longitude: number, timestamp: number): void {
 
         coordinates?.map(coord => {
             if(
@@ -151,6 +156,7 @@ const ExecutingTask: React.FC = () => {
                 )
                 {
                     coord.concluded = true;
+                    coord.datetime = timestamp;
                     console.log('checked: ', latitude.toFixed(6), longitude.toFixed(6), coord.id);
             }
         });
@@ -184,7 +190,7 @@ const ExecutingTask: React.FC = () => {
             }
 
             setExecuting([...executing, data]);
-            checkedMarker(latitude, longitude);
+            checkedMarker(latitude, longitude, timestamp);
         }
     }
 
