@@ -2,7 +2,7 @@ import { getMongoManager, getRepository } from "typeorm";
 import AppErrors from "../../../utils/errors/AppErrors";
 import Task from "../entities/Task";
 import Coordinate, { IExecuting } from "../schemas/Coordinate";
-import { isEqual, format, getTime } from 'date-fns';
+import { isEqual, isAfter, isBefore, getTime } from 'date-fns';
 
 interface IFindTask {
     id: string;
@@ -83,6 +83,18 @@ class FindAnalysisTaskService {
                     getTime(new Date(coord.data)), 
                     getTime(new Date(startDate))
                 )) {
+                    return coord;
+                }
+            })
+        }else {
+            console.log('2');
+            findCoordinateDate = coordinates.executing.filter(coord => {
+                if(
+                    isBefore(getTime(new Date(startDate)), getTime(new Date(coord.data)))
+                    &&
+                    isAfter(getTime(new Date(endDate)), getTime(new Date(coord.data)))
+                ){                   
+                
                     return coord;
                 }
             })

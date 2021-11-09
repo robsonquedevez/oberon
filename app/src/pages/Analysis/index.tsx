@@ -40,7 +40,7 @@ import {
 import { useSnackbar } from 'notistack'
 import { useMapEvents, Marker, Popup } from '@monsonjeremy/react-leaflet';
 import * as L from 'leaflet';
-import { format } from 'date-fns';
+import { format, differenceInHours } from 'date-fns';
 
 import api from '../../services/api';
 import {
@@ -206,6 +206,10 @@ const Analysis: React.FC = () => {
     const [analysisType, setAnalysisType] = useState<number>(0);
     const [searchStartDate, setSearchStartDate] = useState<string>('none');
     const [searchEndDate, setSearchEndDate] = useState<string>('none');
+
+
+    const [amountConcludedMarker, setAmountConcludedMarker] = useState<number>(0);
+    const [amountFailedMarker, setAmountFailedMarker] = useState<number>(0);
     
     const typesTask = ['Ronda', 'Quadrante', 'Ponto de chegada'];
 
@@ -385,7 +389,7 @@ const Analysis: React.FC = () => {
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                disabled={analysisType === 1 ? true : false}                            
+                                disabled={(analysisType === 1 || analysisType === 0) ? true : false}                            
                             />
 
                             <Button
@@ -569,60 +573,123 @@ const Analysis: React.FC = () => {
                         {task.executing.map(execute => (
 
                             <div>
-                                
 
+                                {analysisType === 2 &&                              
+
+                                    <TableContainer component={Paper} >
+
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Realizado em</TableCell>
+                                                    <TableCell>{ format(new Date(execute.data), 'dd/MM/yyyy') }</TableCell>
+                                                    <TableCell>
+                                                        <MapLink onClick={handleShowMapMarkers}>
+                                                            ver no mapa
+                                                            <OpenInNew />
+                                                        </MapLink>
+                                                    </TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                        </Table>
+
+                                        <Table>
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Nome</TableCell>
+                                                    <TableCell>Data</TableCell>
+                                                    <TableCell>Pontos Realizados {amountConcludedMarker}</TableCell>
+                                                    <TableCell>Pontos Faltantes {amountFailedMarker}</TableCell>
+                                                    <TableCell>Dif. Ponto anterior</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {
+                                                    // const concludedMarker = execute.markers.filter(mrk => mrk.concluded === true);
+                                                    // const failedMarker = execute.markers.filter(mrk => mrk.concluded === false);
+                                                    // const hoursTotal = differenceInHours(
+                                                    //         execute.coordinates[0].timestamp, 
+                                                    //         execute.coordinates[execute.coordinates.length - 1].timestamp
+                                                    // )
+
+                                                    // setAmountConcludedMarker(amountConcludedMarker + concludedMarker.length);
+                                                    // setAmountFailedMarker(amountFailedMarker + failedMarker.length);
+
+                                                    execute.markers.map(marker => (                                                      
+                                                        
+                                                        <TableRow key={marker.id}>
+                                                            <TableCell>{marker.name ? marker.name : marker.id}</TableCell>
+                                                            <TableCell align='center'>
+                                                                { marker.datetime === 0 
+                                                                    ? '-' 
+                                                                    : format(new Date(marker.datetime), 'dd/MM/yyyy HH:mm:ss')}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {
+                                                                    execute.markers.filter(mrk => mrk.concluded === true).length
+                                                                }
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {
+                                                                    execute.markers.filter(mrk => mrk.concluded === false).length
+                                                                }
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {
+                                                                    
+                                                                }
+                                                            </TableCell>
+                                                        </TableRow>
+                                                        
+                                                    ))
+                                                }
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                }
+
+                                {analysisType === 1 && 
+                                
                                 <TableContainer component={Paper} >
 
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>Realizado em</TableCell>
-                                                <TableCell>{ format(new Date(execute.data), 'dd/MM/yyyy') }</TableCell>
-                                                <TableCell>
-                                                    <MapLink onClick={handleShowMapMarkers}>
-                                                        ver no mapa
-                                                        <OpenInNew />
-                                                    </MapLink>
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                    </Table>
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>Nome</TableCell>
+                                            <TableCell>Data</TableCell>
+                                            <TableCell>Longitude</TableCell>
+                                            <TableCell align='center'>Data e Hora</TableCell>
+                                            <TableCell>Concluído</TableCell>
+                                        </TableRow>
+                                    </TableHead>
 
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>Nome</TableCell>
-                                                <TableCell>Latitude</TableCell>
-                                                <TableCell>Longitude</TableCell>
-                                                <TableCell align='center'>Data e Hora</TableCell>
-                                                <TableCell>Concluído</TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {
-                                                execute.markers.map(marker => (
-                                                    <TableRow key={marker.id}>
-                                                        <TableCell>{marker.name ? marker.name : marker.id}</TableCell>
-                                                        <TableCell>{marker.latitude}</TableCell>
-                                                        <TableCell>{marker.longitude}</TableCell>
-                                                        <TableCell align='center'>
-                                                            { marker.datetime === 0 
-                                                                ? '-' 
-                                                                : format(new Date(marker.datetime), 'dd/MM/yyyy HH:mm:ss')}
-                                                        </TableCell>
-                                                        <TableCell align='center'>
-                                                            { 
-                                                                marker.concluded 
-                                                                ? <Check className={classes.iconChecked} /> 
-                                                                : <Close className={classes.iconNotChecked} /> 
-                                                            }
-                                                        </TableCell>
-                                                    </TableRow>
-                                                ))
-                                            }
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
+                                    <TableBody>
+                                        {
+                                            execute.markers.map(marker => (
+                                                <TableRow key={marker.id}>
+                                                    <TableCell>{marker.name ? marker.name : marker.id}</TableCell>
+                                                    <TableCell>{marker.latitude}</TableCell>
+                                                    <TableCell>{marker.longitude}</TableCell>
+                                                    <TableCell align='center'>
+                                                        { marker.datetime === 0 
+                                                            ? '-' 
+                                                            : format(new Date(marker.datetime), 'dd/MM/yyyy HH:mm:ss')}
+                                                    </TableCell>
+                                                    <TableCell align='center'>
+                                                        { 
+                                                            marker.concluded 
+                                                            ? <Check className={classes.iconChecked} /> 
+                                                            : <Close className={classes.iconNotChecked} /> 
+                                                        }
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        }
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                                
+                                }
                             </div>
 
                         ))}

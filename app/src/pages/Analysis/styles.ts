@@ -73,7 +73,7 @@ export const ShowDetails = styled.div`
     justify-content: flex-start;
     align-items: center;
     overflow-y: scroll;
-    max-height: Calc(100vh - 20rem);
+    max-height: Calc(100vh - 18rem);
     margin-top: 10px;
     padding-top: 10px;
 
