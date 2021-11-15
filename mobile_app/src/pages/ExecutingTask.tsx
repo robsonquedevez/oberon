@@ -14,6 +14,7 @@ import { Feather } from '@expo/vector-icons'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as Location from 'expo-location';
 import MapViewDirections from "react-native-maps-directions";
+import { getUnixTime } from 'date-fns';
 
 import markerIcon from '../assets/Marker.png';
 import markerUserIcon from '../assets/Person.png';
@@ -76,7 +77,7 @@ interface Coordinate {
 interface IPosition {
     latitude: number;
     longitude: number;
-    timestamp: number;
+    timestamp?: number;
 }
 
 const ExecutingTask: React.FC = () => {
@@ -138,7 +139,7 @@ const ExecutingTask: React.FC = () => {
                 setCurrentPosition({ 
                     latitude: location.coords.latitude,
                     longitude: location.coords.longitude,
-                    timestamp: location.timestamp,
+                    timestamp: getUnixTime(Date.now())
                 });
 
                 setLoading(false);
@@ -146,7 +147,7 @@ const ExecutingTask: React.FC = () => {
         )()
     }, []);
 
-    function checkedMarker(latitude: number, longitude: number, timestamp: number): void {
+    function checkedMarker(latitude: number, longitude: number): void {
 
         coordinates?.map(coord => {
             if(
@@ -156,19 +157,19 @@ const ExecutingTask: React.FC = () => {
                 )
                 {
                     coord.concluded = true;
-                    coord.datetime = timestamp;
+                    coord.datetime = getUnixTime(Date.now());
                     console.log('checked: ', latitude.toFixed(6), longitude.toFixed(6), coord.id);
             }
         });
     }
 
-    function storageCurrentPosition({ latitude, longitude, timestamp }:IPosition): void {
+    function storageCurrentPosition({ latitude, longitude }:IPosition): void {
 
         if(!executing)  {
             setExecuting([{
                 latitude,
                 longitude,
-                timestamp
+                timestamp: getUnixTime(Date.now())          
             }])
             return;
         }
@@ -181,21 +182,23 @@ const ExecutingTask: React.FC = () => {
             longitude.toFixed(5) !== execLng.toFixed(5)
         ) 
         {  
-            console.log('move: ', latitude.toFixed(5), longitude.toFixed(5));
+            console.log('move: ', latitude.toFixed(5), longitude.toFixed(5), getUnixTime(Date.now()));
 
             let data = {
                 latitude,
                 longitude,
-                timestamp
+                timestamp: getUnixTime(Date.now())
             }
 
             setExecuting([...executing, data]);
-            checkedMarker(latitude, longitude, timestamp);
+            checkedMarker(latitude, longitude);
         }
     }
 
 
     async function handleFinishedTask() {
+
+        setLoading(true);
         
         console.log('Finished');
        
@@ -204,18 +207,13 @@ const ExecutingTask: React.FC = () => {
             coordinates: executing,
             markers: coordinates
         })
-        .then(response => {
-            console.log(response.data);
+        .then(() => {
             navigation.goBack();
         })
         .catch(error => {
+            navigation.goBack();
             console.log(error);
             Alert.alert('Erro', 'Erro ao finalizar tarefa');
-            navigation.goBack();
-        })
-        .finally(() => {
-            console.log('goback');
-            navigation.goBack();
         })
     }
     
@@ -254,8 +252,7 @@ const ExecutingTask: React.FC = () => {
                         onUserLocationChange={(e) => {                           
                             storageCurrentPosition({
                                 latitude: e.nativeEvent.coordinate.latitude,
-                                longitude: e.nativeEvent.coordinate.longitude,
-                                timestamp: e.nativeEvent.coordinate.timestamp
+                                longitude: e.nativeEvent.coordinate.longitude
                             })                            
                         }}                        
                     >
@@ -282,7 +279,7 @@ const ExecutingTask: React.FC = () => {
                     :
                     <View  style={styles.Loading}>
                         <ActivityIndicator size='large' color='#2446C0'/>
-                        <Text style={styles.TextLoading}>Carregando...</Text>
+                        <Text style={styles.TextLoading}>Processando...</Text>
                     </View>
                 }
 
