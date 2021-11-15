@@ -68,8 +68,6 @@ class ExecutingTaskService {
             { $push: { executing: { data:  currentDate, coordinates, markers } } }, 
             { upsert: true, returnOriginal: true }
         );
-
-        return;
     }
 
 }

@@ -134,7 +134,7 @@ class TaskController {
 
         await executingTask.execute({ id, coordinates, markers });
 
-        return response.status(200);
+        return response.status(200).send();
     }
 
     public async FindAnalysis(request: Request, response: Response): Promise<Response> {
