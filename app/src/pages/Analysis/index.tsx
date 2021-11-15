@@ -49,6 +49,7 @@ import {
 
 import BaseNavbar from '../../components/BaseNavbar';
 import Map from '../../components/Map';
+import AnalysisDayRel from '../../components/AnalysiDayRel';
 
 import {
     Container,
@@ -421,7 +422,7 @@ const Analysis: React.FC = () => {
 
                     <ShowDetails>
 
-                        <Accordion>
+                        {/* <Accordion>
                         <AccordionSummary>
                             <TextDetail> + Detalhes da tarefa </TextDetail>
                         </AccordionSummary>
@@ -567,7 +568,7 @@ const Analysis: React.FC = () => {
                                     </MapLink>
                                 </Form>
                             </AccordionDetails>
-                        </Accordion>
+                        </Accordion> */}
 
 
                         {task.executing.map(execute => (
@@ -650,44 +651,7 @@ const Analysis: React.FC = () => {
 
                                 {analysisType === 1 && 
                                 
-                                <TableContainer component={Paper} >
-
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Nome</TableCell>
-                                            <TableCell>Data</TableCell>
-                                            <TableCell>Longitude</TableCell>
-                                            <TableCell align='center'>Data e Hora</TableCell>
-                                            <TableCell>Concluído</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-
-                                    <TableBody>
-                                        {
-                                            execute.markers.map(marker => (
-                                                <TableRow key={marker.id}>
-                                                    <TableCell>{marker.name ? marker.name : marker.id}</TableCell>
-                                                    <TableCell>{marker.latitude}</TableCell>
-                                                    <TableCell>{marker.longitude}</TableCell>
-                                                    <TableCell align='center'>
-                                                        { marker.datetime === 0 
-                                                            ? '-' 
-                                                            : format(new Date(marker.datetime), 'dd/MM/yyyy HH:mm:ss')}
-                                                    </TableCell>
-                                                    <TableCell align='center'>
-                                                        { 
-                                                            marker.concluded 
-                                                            ? <Check className={classes.iconChecked} /> 
-                                                            : <Close className={classes.iconNotChecked} /> 
-                                                        }
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        }
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
+                                    <AnalysisDayRel task={task} />
                                 
                                 }
                             </div>
