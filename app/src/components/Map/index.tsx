@@ -5,12 +5,35 @@ import L from 'leaflet';
 
 import { Container } from './styles';
 
+interface IRoute {
+    latitude: number;
+    longitude: number;
+    timestamp: number;
+}
+
+interface IMarker {
+    id: string;
+    name: string;
+    latitude: number;
+    longitude: number;
+    concluded: boolean;
+    datetime: number;
+}
+
 interface MapProps {
     initialPosition?: [ lat: number, lng: number ];
     zoomScroll?: boolean;
+    markers?: IMarker[];
+    route?: IRoute[];
 }
 
-const Map: React.FC<MapProps> = ({ initialPosition = null, zoomScroll=true, children }) => {
+const Map: React.FC<MapProps> = ({ 
+    initialPosition = null, 
+    zoomScroll=true, 
+    markers,
+    route,
+    children 
+}) => {
     const initialCoords = L.latLng(-22.7599758, -47.7007174);
 
     return (
