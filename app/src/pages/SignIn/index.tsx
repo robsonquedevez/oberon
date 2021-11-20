@@ -66,7 +66,7 @@ const SignIn: React.FC = () => {
                 return;
             }
 
-            const msg = err.response.data? err.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
+            const msg = err.response ? err.response.data.message : 'Houve um erro ao acessar. Tente novamente.';
 
             enqueueSnackbar(msg, {variant: 'error'});
         }
