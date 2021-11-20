@@ -29,7 +29,7 @@ import {
 } from '@material-ui/icons';
 import { FormHandles } from '@unform/core';
 import { Form } from '@unform/web';
-import { useMapEvents, Marker, Polygon, Popup } from '@monsonjeremy/react-leaflet';
+import { useMapEvents, Marker, Popup } from '@monsonjeremy/react-leaflet';
 import * as L from 'leaflet';
 import { v4 } from 'uuid';
 import { useSnackbar } from 'notistack';
