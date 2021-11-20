@@ -92,21 +92,3 @@ export const ShowDetails = styled.div`
         color: #A1A1A1;
     }
 `;
-
-export const MapLink = styled.div`
-    max-width: 130px;
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    font-size: 1rem;
-    font-family: 'Roboto', sans-serif;
-    font-weight: 400;
-    margin-top: 1rem;
-
-    &:hover {
-        color: #3f51b5;
-        cursor: pointer;
-    }
-`;

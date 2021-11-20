@@ -11,36 +11,12 @@ import {
     Input as SelectInput,
     CircularProgress,
     Button,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
     TextField,
-    FormControlLabel,
-    Checkbox,
-    FormGroup,
-    TableContainer,
-    Table,
-    TableHead,
-    TableCell,
-    TableRow,
-    TableBody,
-    Dialog,
-    AppBar,
-    Toolbar,
-    IconButton,
-    Slide,
 } from '@material-ui/core';
-import { TransitionProps } from '@material-ui/core/transitions'
 import {
     Search as SearchIcon,
-    Close,
-    Check,
-    OpenInNew
 } from '@material-ui/icons';
 import { useSnackbar } from 'notistack'
-import { useMapEvents, Marker, Popup } from '@monsonjeremy/react-leaflet';
-import * as L from 'leaflet';
-import { format, differenceInHours } from 'date-fns';
 
 import api from '../../services/api';
 import {
@@ -48,21 +24,14 @@ import {
 } from '../../hooks/Auth';
 
 import BaseNavbar from '../../components/BaseNavbar';
-import Map from '../../components/Map';
-import AnalysisDayRel from '../../components/AnalysiDayRel';
+import DailyAnalysisReport from '../../components/DailyAnalysisReport';
+import PeriodAnalysisReport from '../../components/PeriodAnalysisReport';
 
 import {
     Container,
     Search,
-    TextDetail,
-    InputGroup,
     ShowDetails,
-    MapLink
 } from './styles';
-
-
-import marker from '../../assets/images/Marker.svg';
-import markerSuccess from '../../assets/images/MarkerSuccess.svg';
 
 const useStyles = makeStyles((theme) => ({
     paperContent: {
@@ -116,13 +85,6 @@ const useStyles = makeStyles((theme) => ({
       },
 }));
 
-const Transition = React.forwardRef(function Transition(
-    props: TransitionProps & { children?: React.ReactElement },
-    ref: React.Ref<unknown>,
-  ) {
-    return <Slide direction="up" ref={ref} {...props} />;
-  });
-
 interface IUser {
     id: string;
     name: string;
@@ -175,44 +137,21 @@ interface ITask {
     ]
 }
 
-interface ICoordPoligan {
-    lat: number;
-    lng: number;
-}
-
-const MarkerIcon = L.icon({
-    iconUrl: marker,
-    iconSize: [18, 18],
-});
-
-const MarkerSuccessIcon = L.icon({
-    iconUrl: markerSuccess,
-    iconSize: [20, 20],
-});
-
 const Analysis: React.FC = () => {
     const { user } = useAuth();
     const formRef = useRef<FormHandles>(null);
-    const formTaskRef = useRef<FormHandles>(null);
     const classes = useStyles();
     const [users, setUsers] = useState<IUser[]>([]);
     const [listTask, setListTask] = useState<IListTask[]>([]);
     const [task, setTask] = useState<ITask | null>(null);
     const { enqueueSnackbar } = useSnackbar();
     const [btnLoading, setBtnLoading] = useState<boolean>(false);
-    const [openMapMarkers, setOpenMapMarkers] = useState<boolean>(false);
     
     const [userSelect, setUserSelect] = useState<string | null>(null);
     const [taskSelect, setTaskSelect] = useState<string | null>(null);
     const [analysisType, setAnalysisType] = useState<number>(0);
     const [searchStartDate, setSearchStartDate] = useState<string>('none');
-    const [searchEndDate, setSearchEndDate] = useState<string>('none');
-
-
-    const [amountConcludedMarker, setAmountConcludedMarker] = useState<number>(0);
-    const [amountFailedMarker, setAmountFailedMarker] = useState<number>(0);
-    
-    const typesTask = ['Ronda', 'Quadrante', 'Ponto de chegada'];
+    const [searchEndDate, setSearchEndDate] = useState<string>('none');   
 
     useEffect(() => {
         (
@@ -230,12 +169,9 @@ const Analysis: React.FC = () => {
         )()
     }, [user.enterprise, enqueueSnackbar]);
 
-    const handleShowMapMarkers = useCallback(() => {
-        setOpenMapMarkers(!openMapMarkers);
-    }, [openMapMarkers]);
-
     const handleChangeSelectUser = useCallback( async (event) => {
         setUserSelect(event.target.value as string);
+        setTask(null);
 
         api.get(`/task/user/${event.target.value}`)
         .then(response => {
@@ -251,6 +187,7 @@ const Analysis: React.FC = () => {
 
     const handleChangeSelectTask = useCallback( (event) => {
         setTaskSelect(event.target.value as string);
+        setTask(null);
     }, []);
     
     const handleSubmit = useCallback( async () => {
@@ -282,6 +219,7 @@ const Analysis: React.FC = () => {
 
     const handleChangeAnalysisType = useCallback((event) => {
         setAnalysisType(Number(event.target.value as string));
+        setTask(null);
     }, []);
 
     return (
@@ -422,291 +360,35 @@ const Analysis: React.FC = () => {
 
                     <ShowDetails>
 
-                        {/* <Accordion>
-                        <AccordionSummary>
-                            <TextDetail> + Detalhes da tarefa </TextDetail>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <Form 
-                                ref={formTaskRef} 
-                                onSubmit={() => {}}
-                            >
-                                <InputGroup>
-
-                                    <TextField
-                                        variant='outlined'
-                                        label='Título'
-                                        name='tack_title'
-                                        type='text'
-                                        value={task.task.title}
-                                        className={classes.textField}
-                                        disabled
-                                    />
-
-                                    <TextField
-                                        variant='outlined'
-                                        label='Tipo'
-                                        name='type_task'
-                                        type='text'
-                                        value={ typesTask[task.task.type - 1 ]}
-                                        className={classes.textField}
-                                        disabled
-                                    />                                   
-
-                                    <TextField
-                                        variant='outlined'
-                                        label='Início'
-                                        name='start_task'
-                                        type='text'
-                                        className={classes.textField}
-                                        value={format(new Date(task.task.start_task), 'dd/MM/yyyy hh:mm:ss')}      
-                                        disabled                       
-                                    />
-
-                                    <TextField
-                                        variant='outlined'
-                                        label='Fim'
-                                        name='end_task'
-                                        type='text'
-                                        className={classes.textField}
-                                        value={format(new Date(task.task.end_task), 'dd/MM/yyyy hh:mm:ss')}
-                                        disabled
-                                    />
-
-                                    </InputGroup>
-
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox 
-                                                color='primary' 
-                                                checked={!!task.task.repeat}
-                                            />
-                                        }
-                                        label='Repetir'
-                                        disabled
-                                    />                                    
-
-                                    <FormGroup row className={classes.formGroupWeekDays}>
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox 
-                                                color='primary' 
-                                                checked={task.task.days_of_the_week.split(',').find( day => day === 'sunday') === 'sunday' ? true : false}
-                                            />
-                                        }
-                                        label='Domingo'
-                                        disabled
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox 
-                                                color='primary' 
-                                                checked={task.task.days_of_the_week.split(',').find( day => day === 'monday') === 'monday' ? true : false}
-                                            />
-                                        }
-                                        label='Segunda'
-                                        disabled
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox 
-                                                color='primary'  
-                                                checked={task.task.days_of_the_week.split(',').find( day => day === 'tuesday') === 'tuesday' ? true : false}
-                                            />
-                                        }
-                                        label='Terça'
-                                        disabled
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox 
-                                                color='primary' 
-                                                checked={task.task.days_of_the_week.split(',').find( day => day === 'wednesday') === 'wednesday' ? true : false}
-                                            />
-                                        }
-                                        label='Quarta'
-                                        disabled
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox 
-                                                color='primary' 
-                                                checked={task.task.days_of_the_week.split(',').find( day => day === 'thursday') === 'thursday' ? true : false}
-                                            />
-                                        }
-                                        label='Quinta'
-                                        disabled
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox 
-                                                color='primary' 
-                                                checked={task.task.days_of_the_week.split(',').find( day => day === 'friday') === 'friday' ? true : false}
-                                            />
-                                        }
-                                        label='Sexta'
-                                        disabled
-                                    />
-                                    <FormControlLabel
-                                        control={
-                                            <Checkbox 
-                                                color='primary' 
-                                                checked={task.task.days_of_the_week.split(',').find( day => day === 'saturday') === 'saturday' ? true : false}
-                                            />
-                                        }
-                                        label='Sábado'
-                                        disabled
-                                    />                            
-
-                                    </FormGroup>
-
-                                    <h6>{task.coordinates.length} ponto{task.coordinates.length > 0 ? 's': ''} criado{task.coordinates.length > 0 ? 's': ''} no mapa</h6>
-                                    
-                                    <MapLink onClick={handleShowMapMarkers}>
-                                        ver no mapa
-                                        <OpenInNew />
-                                    </MapLink>
-                                </Form>
-                            </AccordionDetails>
-                        </Accordion> */}
-
-
                         {task.executing.map(execute => (
 
                             <div>
 
-                                {analysisType === 2 &&                              
+                                {analysisType === 2 &&
 
-                                    <TableContainer component={Paper} >
-
-                                        <Table>
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Realizado em</TableCell>
-                                                    <TableCell>{ format(new Date(execute.data), 'dd/MM/yyyy') }</TableCell>
-                                                    <TableCell>
-                                                        <MapLink onClick={handleShowMapMarkers}>
-                                                            ver no mapa
-                                                            <OpenInNew />
-                                                        </MapLink>
-                                                    </TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                        </Table>
-
-                                        <Table>
-                                            <TableHead>
-                                                <TableRow>
-                                                    <TableCell>Nome</TableCell>
-                                                    <TableCell>Data</TableCell>
-                                                    <TableCell>Pontos Realizados {amountConcludedMarker}</TableCell>
-                                                    <TableCell>Pontos Faltantes {amountFailedMarker}</TableCell>
-                                                    <TableCell>Dif. Ponto anterior</TableCell>
-                                                </TableRow>
-                                            </TableHead>
-                                            <TableBody>
-                                                {
-                                                    // const concludedMarker = execute.markers.filter(mrk => mrk.concluded === true);
-                                                    // const failedMarker = execute.markers.filter(mrk => mrk.concluded === false);
-                                                    // const hoursTotal = differenceInHours(
-                                                    //         execute.coordinates[0].timestamp, 
-                                                    //         execute.coordinates[execute.coordinates.length - 1].timestamp
-                                                    // )
-
-                                                    // setAmountConcludedMarker(amountConcludedMarker + concludedMarker.length);
-                                                    // setAmountFailedMarker(amountFailedMarker + failedMarker.length);
-
-                                                    execute.markers.map(marker => (                                                      
-                                                        
-                                                        <TableRow key={marker.id}>
-                                                            <TableCell>{marker.name ? marker.name : marker.id}</TableCell>
-                                                            <TableCell align='center'>
-                                                                { marker.datetime === 0 
-                                                                    ? '-' 
-                                                                    : format(new Date(marker.datetime), 'dd/MM/yyyy HH:mm:ss')}
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {
-                                                                    execute.markers.filter(mrk => mrk.concluded === true).length
-                                                                }
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {
-                                                                    execute.markers.filter(mrk => mrk.concluded === false).length
-                                                                }
-                                                            </TableCell>
-                                                            <TableCell>
-                                                                {
-                                                                    
-                                                                }
-                                                            </TableCell>
-                                                        </TableRow>
-                                                        
-                                                    ))
-                                                }
-                                            </TableBody>
-                                        </Table>
-                                    </TableContainer>
+                                    <PeriodAnalysisReport 
+                                        task={task} 
+                                        executing_user={users.filter(user => user.id === userSelect)[0].name}
+                                        startDate={searchStartDate}
+                                        endDate={searchEndDate}
+                                    />
+                                    
                                 }
 
                                 {analysisType === 1 && 
                                 
-                                    <AnalysisDayRel task={task} />
+                                    <DailyAnalysisReport 
+                                        task={task}
+                                        executing_user={users.filter(user => user.id === userSelect)[0].name}
+                                        date={searchStartDate}
+                                    />
                                 
                                 }
                             </div>
 
-                        ))}
-
-                        
-                        <Dialog
-                            fullScreen
-                            open={openMapMarkers}
-                            onClose={handleShowMapMarkers}
-                            TransitionComponent={Transition}
-                        >
-                            <AppBar className={classes.appBar}>
-                                <Toolbar>
-                                    <IconButton
-                                        edge='start'
-                                        color='inherit'
-                                        onClick={handleShowMapMarkers}
-                                        aria-label='fechar'
-                                    >
-                                        <Close />
-                                    </IconButton>
-                                </Toolbar>
-                            </AppBar>
-
-                            <Map
-                                initialPosition={[task.coordinates[0].latitude, task.coordinates[0].longitude]}  
-                                zoomScroll={false}    
-                            >
-                            
-                            <Marker 
-                                icon={MarkerIcon}
-                                position={{
-                                    lat: -22.483122359313782,
-                                    lng: -47.472690939903266
-                                }}
-                            />
-
-                            {/* {
-                               
-                                task.coordinates.map(coord => (
-                                    <Marker
-                                        icon={MarkerSuccessIcon}
-                                        position={L.latLng(coord.latitude, coord.longitude)}
-                                    />
-                                ))
-                            } */}
-
-                            </Map>
-
-                        </Dialog>
+                        ))}              
 
                     </ShowDetails>
-
                 }
 
             </Container>
