@@ -32,8 +32,6 @@ class ExecutingTaskService {
         markers
     }: IRequest): Promise<void> {
 
-        console.log(id, coordinates, markers);
-
         const taskRepository = getRepository(Task);
 
         const task = await taskRepository.findOne({
@@ -49,6 +47,12 @@ class ExecutingTaskService {
             );
         }
 
+        if(!task.repeat) {
+            task.finished = true;
+        }
+
+        await taskRepository.save(task);
+
         const currentDate = format(new Date(), 'yyyy-MM-dd');
 
         const coordinatesRepository = getMongoManager('mongo');
@@ -60,16 +64,15 @@ class ExecutingTaskService {
                 'A tarefa executada não foi encontrada. Tente novamente',
                 401
             );
-        }
+        }        
 
         await coordinatesRepository.findOneAndUpdate(
             Coordinate, 
             { task: { $eq: id } },
             { $push: { executing: { data:  currentDate, coordinates, markers } } }, 
             { upsert: true, returnOriginal: true }
-        );
+        );        
     }
-
 }
 
 export default ExecutingTaskService;

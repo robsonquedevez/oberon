@@ -8,7 +8,7 @@ interface IEnterprise {
     cnpj: string;
     name: string;
     address: string;
-    number: number;
+    number: string;
     district: string;
     city: string;
     state: string;
