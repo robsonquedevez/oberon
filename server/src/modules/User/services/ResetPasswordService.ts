@@ -29,6 +29,10 @@ class UpdateUserService {
             );
         }
 
+        if(!user.password) {
+            throw new AppErrors('Senha não cadastrada, acesse o e-mail de criação de acesso.');
+        }
+
         const passwordMatched = await hash.compareHash({
             payload: currentPassword,
             hashed: user.password

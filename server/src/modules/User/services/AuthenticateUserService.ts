@@ -37,6 +37,10 @@ class AuthenticateUserService {
             throw new AppErrors('Usuário ou senha inválido');
         }
 
+        if(!user.password) {
+            throw new AppErrors('Senha não cadastrada, acesse o e-mail de criação de acesso.');
+        }
+
         const passwordMatched = await hash.compareHash({
             payload: password,
             hashed: user.password
