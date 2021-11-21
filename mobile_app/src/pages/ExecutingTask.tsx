@@ -158,7 +158,7 @@ const ExecutingTask: React.FC = () => {
                 {
                     coord.concluded = true;
                     coord.datetime = getUnixTime(Date.now());
-                    console.log('checked: ', latitude.toFixed(6), longitude.toFixed(6), coord.id);
+                    // console.log('checked: ', latitude.toFixed(6), longitude.toFixed(6), coord.id);
             }
         });
     }
@@ -182,7 +182,7 @@ const ExecutingTask: React.FC = () => {
             longitude.toFixed(5) !== execLng.toFixed(5)
         ) 
         {  
-            console.log('move: ', latitude.toFixed(5), longitude.toFixed(5), getUnixTime(Date.now()));
+            // console.log('move: ', latitude.toFixed(5), longitude.toFixed(5), getUnixTime(Date.now()));
 
             let data = {
                 latitude,
@@ -200,7 +200,7 @@ const ExecutingTask: React.FC = () => {
 
         setLoading(true);
         
-        console.log('Finished');
+        // console.log('Finished');
        
         api.post('/task/executing', { 
             id: idTask,  
