@@ -44,7 +44,10 @@ const TaskList: React.FC = () => {
                 setLoading(true);
                 api.get(`/task/user/today/${user.id}`)
                 .then(response => {
-                    setTasks(response.data);
+                    const tasksResponse = response.data as ITask[];
+
+                    setTasks(tasksResponse.filter(task => task.finished === false));
+                    
                     setLoading(false);
                 })
                 .catch(error => {
@@ -66,6 +69,8 @@ const TaskList: React.FC = () => {
 
     function handleTaskPlay(task: string){
         navigation.navigate('ExecutingTask', { task });
+
+        setTasks(tasks.filter(run => ( run.id !== task )));
     }
 
 
@@ -91,6 +96,7 @@ const TaskList: React.FC = () => {
                         <ActivityIndicator size='large' color='#2446C0'/>
                     </View>
                     :
+                    tasks.length > 0 ?
                     <FlatList
                         data={tasks}
                         keyExtractor={(tasks => tasks.id)}
@@ -108,6 +114,10 @@ const TaskList: React.FC = () => {
                                 </View>
                         )}
                     />
+                    :
+                    <View style={styles.Loading} >
+                        <Text style={styles.TextNotFound}>Nenhuma tarefa encontrada</Text>
+                    </View>
                 }                
 
             </View>
@@ -187,6 +197,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    TextNotFound: {
+        color: '#9e9e9e',
+        fontFamily: 'Roboto_400Regular',
+        fontSize: 18,
+        marginRight: 5,
     }
 });
 

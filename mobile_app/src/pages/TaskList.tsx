@@ -11,7 +11,6 @@ import { Feather } from '@expo/vector-icons'
 import { StatusBar } from 'expo-status-bar';
 import { useNavigation } from '@react-navigation/native';
 import { format } from 'date-fns';
-import AppLoading from 'expo-app-loading';
 
 import { useAuth } from '../hook/Auth';
 import api from '../services/api';
@@ -44,13 +43,13 @@ const TaskList: React.FC = () => {
                 setLoading(true);
                 api.get(`/task/user/${user.id}`)
                 .then(response => {
-                    setTasks(response.data);
+                    setTasks(response.data);                    
                     setLoading(false);
                 })
                 .catch(error => {
                     console.log(error.data);
                     setLoading(false);
-                })                
+                })
             }
         )()
     }, []);
@@ -91,23 +90,40 @@ const TaskList: React.FC = () => {
                         <ActivityIndicator size='large' color='#2446C0'/>
                     </View>
                     :
+                    tasks.length > 0 ?
                     <FlatList
                         data={tasks}
                         keyExtractor={(tasks => tasks.id)}
                         renderItem={({item}) => (
                             <View style={styles.ListItem}>
                                     <View>
-                                        <Text style={styles.TaskTitle}>{item.title}</Text>
+                                        <Text style={item.finished ? styles.TaskTitleDisabled : styles.TaskTitle}>
+                                            {item.title}
+                                        </Text>
                                         <Text style={styles.TaskDate}>Início: { format(new Date(item.start_task), 'dd/MM/yyyy HH:mm')}</Text>
                                         <Text style={styles.TaskType}>Tipo: {types[item.type - 1]}</Text>
                                     </View>
-                                    <TouchableOpacity style={styles.ButtonPlay} onPress={() => handleTaskPlay(item.id)}>
-                                        <Text style={styles.TextButtonPlay} >Iniciar</Text>
-                                        <Feather name='play' size={28} color='#1A6D22' />
+                                    <TouchableOpacity 
+                                        style={ item.finished ? styles.ButtonPlayDisabled : styles.ButtonPlay} 
+                                        onPress={() => handleTaskPlay(item.id)}
+                                        disabled={item.finished ? true : false}
+                                    >
+                                        <Text style={item.finished ? styles.TextButtonPlayDisabled : styles.TextButtonPlay} >
+                                            {
+                                               item.finished ? 'Indisponível'  : 'Iniciar'
+                                            }
+                                        </Text>
+                                        {
+                                            item.finished ? null : <Feather name='play' size={28} color='#1A6D22' />
+                                        }                                        
                                     </TouchableOpacity>
                                 </View>
                         )}
                     />
+                    :
+                    <View style={styles.Loading} >
+                        <Text style={styles.TextNotFound}>Nenhuma tarefa encontrada</Text>
+                    </View>
                 }                
 
             </View>
@@ -165,11 +181,34 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginRight: 5
     },
+    ButtonPlayDisabled: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        backgroundColor: '#f5f5f5',
+        borderRadius: 10,
+    },
+    TextButtonPlayDisabled: {
+        color: '#bdbdbd',
+        fontFamily: 'Roboto_700Bold',
+        fontSize: 18,
+        marginRight: 5
+    },
     TaskTitle :{
         color: '#000',
         fontFamily: 'Roboto_700Bold',
         fontSize: 18,
         marginRight: 5
+    },
+    TaskTitleDisabled :{
+        color: '#9e9e9e',
+        fontFamily: 'Roboto_400Regular',
+        fontSize: 18,
+        marginRight: 5,
+        textDecorationLine: 'line-through',
+        textDecorationStyle: 'solid'
     },
     TaskDate: {
         color: '#A9A9A9',
@@ -187,6 +226,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    TextNotFound: {
+        color: '#9e9e9e',
+        fontFamily: 'Roboto_400Regular',
+        fontSize: 18,
+        marginRight: 5,
     }
 });
 
