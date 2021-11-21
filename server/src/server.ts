@@ -38,6 +38,4 @@ app.use((
     });
 });
 
-app.listen(4004, () => {
-    console.log('running..., 4004')
-});
+app.listen(4004);
