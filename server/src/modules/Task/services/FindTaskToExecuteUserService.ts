@@ -1,6 +1,7 @@
 import { getRepository } from "typeorm";
 import AppErrors from "../../../utils/errors/AppErrors";
 import Task from "../entities/Task";
+import VerifyRunningTaskToday from '../services/VerifyRunningTaskToday';
 
 interface IFindTaskToExecuteUserService {
     executing_user: string;
@@ -38,7 +39,10 @@ class FindTaskToExecuteUserService {
                 401
             );            
         }
-        return tasks;
+
+        const taskVerificate = await VerifyRunningTaskToday.execute({ tasks });
+        
+        return taskVerificate
     }
 }
 

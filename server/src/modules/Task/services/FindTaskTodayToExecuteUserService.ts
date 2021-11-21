@@ -1,7 +1,8 @@
 import { Between, getRepository } from "typeorm";
+import { format } from 'date-fns';
 import AppErrors from "../../../utils/errors/AppErrors";
 import Task from "../entities/Task";
-import { format } from 'date-fns';
+import VerifyRunningTaskToday from '../services/VerifyRunningTaskToday';
 
 interface IFindTaskToExecuteUserService {
     id: string;
@@ -44,7 +45,10 @@ class FindTaskTodayToExecuteUserService {
                 401
             );            
         }
-        return tasks;
+
+        const taskVerificate = await VerifyRunningTaskToday.execute({ tasks });
+
+        return taskVerificate;
     }
 }
 

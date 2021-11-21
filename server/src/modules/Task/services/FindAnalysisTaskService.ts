@@ -78,7 +78,6 @@ class FindAnalysisTaskService {
 
         if(type === '1') {
             findCoordinateDate = coordinates.executing.filter(coord => {
-                console.log(coord.data, startDate);
                 if(isEqual(
                     getTime(new Date(coord.data)), 
                     getTime(new Date(startDate))
@@ -87,7 +86,6 @@ class FindAnalysisTaskService {
                 }
             })
         }else {
-            console.log('2');
             findCoordinateDate = coordinates.executing.filter(coord => {
                 if(
                     isBefore(getTime(new Date(startDate)), getTime(new Date(coord.data)))

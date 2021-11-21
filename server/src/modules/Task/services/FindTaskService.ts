@@ -7,7 +7,7 @@ interface IFindTask {
     id: string;
 }
 
-interface ICoordinates {
+interface ICoordinate {
     id: string;
     lng: string;
     lat: string;
@@ -15,7 +15,7 @@ interface ICoordinates {
 
 interface IResponse {
     task: Task,
-    coordinates: ICoordinates[]
+    coordinates: ICoordinate[]
 }
 
 class FindTask {
@@ -48,7 +48,7 @@ class FindTask {
 
         const coordinates = await findCoordinates.execute(id);
 
-        if(coordinates.length === 0) {
+        if(coordinates.coordinates.length === 0) {
             throw new AppErrors(
                 'Nenhum ponto no mapa encontrado',
                 401
@@ -64,7 +64,7 @@ class FindTask {
 
         return {
             task,
-            coordinates
+            coordinates: coordinates.coordinates
         };
     }
 }
