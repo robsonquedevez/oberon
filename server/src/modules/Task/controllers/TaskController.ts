@@ -141,8 +141,6 @@ class TaskController {
 
         const { id, type, start, end } = request.params;
 
-        console.log(id, type, start, end);
-
         const findAnalysisTask = new FindAnalysisTaskService();
 
         const tasks = await findAnalysisTask.execute({ id, type, startDate: start, endDate: end });
