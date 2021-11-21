@@ -2,25 +2,13 @@ import { getMongoManager, ObjectID } from "typeorm";
 import AppErrors from "../../../utils/errors/AppErrors";
 import Coordinate from '../schemas/Coordinate';
 
-interface IPosition {
-    id: string;
-    lng: string;
-    lat: string;
-}
-
-interface ICoordinates {
-    id: ObjectID;
-    task: string;
-    coordinates: IPosition[];
-}
-
 class FindCoordinatesService {
 
-    public async execute(task: string): Promise<IPosition[]> {
+    public async execute(task: string): Promise<Coordinate> {
 
         const coordsRepository = getMongoManager('mongo');
 
-        const coords = await coordsRepository.findOne(Coordinate, { task }, { select: [ 'coordinates' ] });
+        const coords = await coordsRepository.findOne(Coordinate, { task });
         
         if(!coords) {
             throw new AppErrors(
@@ -29,7 +17,7 @@ class FindCoordinatesService {
             );            
         }
         
-        return coords.coordinates;
+        return coords;
     }
 }
 
