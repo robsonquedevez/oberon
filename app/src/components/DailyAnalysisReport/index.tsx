@@ -19,7 +19,10 @@ import { TransitionProps } from '@material-ui/core/transitions';
 import {
     Close,
     Check,
-    OpenInNew 
+    OpenInNew,
+    ErrorOutline,
+    ReportProblemOutlined,
+    VerifiedUserOutlined
 } from '@material-ui/icons';
 import { 
     format, 
@@ -70,7 +73,26 @@ const useStyles = makeStyles((theme) => ({
     toolbar: {
         display: 'flex',
         justifyContent: 'space-arrow',
-        alignItems: 'center'
+        alignItems: 'center',        
+    },
+    paddingCell: {
+        paddingTop: 6,
+        paddingBottom: 6,
+    },
+    iconCell: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-arrow',
+        width: '100%',
+    },
+    iconWarning: {
+        color: '#ffc107',
+    },
+    iconError: {
+        color: '#f44336',
+    },
+    iconSuccess: {
+        color: '#4caf50',
     }
 }));
 
@@ -140,6 +162,11 @@ const DailyAnalysisReport: React.FC<IDailyAnalysisReport> = ({ task, executing_u
     const [seconds, setSeconds] = useState<number>(0);
     const [startTask, setStartTask] = useState<number>(0);
     const [endTask, setEndTask] = useState<number>(0);
+    const [cover, setCover] = useState<number>(0);
+    const [estimatedHours, setEstimatedHours] = useState<number>(0);
+    const [estimatedMinutes, setEstimatedMinutes] = useState<number>(0);
+    const [estimatedSeconds, setEstimatedSeconds] = useState<number>(0);
+    const [percentageOfTime, setPercentageOfTime] = useState<number>(0);
 
     const typeTask = ['Ronda', 'Quadrante', 'Ponto de Chegada'];
 
@@ -147,19 +174,29 @@ const DailyAnalysisReport: React.FC<IDailyAnalysisReport> = ({ task, executing_u
 
         const concluded = task.executing[0].markers.filter(marker => marker.concluded === true);
 
-        const seconds = differenceInSeconds(
-            fromUnixTime(task.executing[0].coordinates[task.executing[0].coordinates.length - 1].timestamp),
+        const time = differenceInSeconds(
+            fromUnixTime(
+                task.executing[0].coordinates[task.executing[0].coordinates.length - 1].timestamp),
             fromUnixTime(task.executing[0].coordinates[0].timestamp)
+        ); 
+
+        const estimatedTime = differenceInSeconds(
+            new Date(task.task.end_task),
+            new Date(task.task.start_task)
         ); 
         
         setConcludedMarker(concluded.length);
         setTotalMarkers(task.executing[0].markers.length);
-        setHours(seconds / 3600);
-        setMinutes(Math.trunc(seconds / 60));
-        setSeconds((seconds % 60));
+        setHours(time / 3600);
+        setMinutes(Math.trunc((time % 3600) / 60));
+        setSeconds((time % 60));
         setStartTask(task.executing[0].coordinates[0].timestamp);
         setEndTask(task.executing[0].coordinates[task.executing[0].coordinates.length - 1].timestamp)
-
+        setCover(Math.trunc(((concluded.length/task.executing[0].markers.length) * 100)));
+        setEstimatedHours(estimatedTime / 3600);
+        setEstimatedMinutes(Math.trunc((estimatedTime % 3600) / 60));
+        setEstimatedSeconds(estimatedTime % 60);
+        setPercentageOfTime(Math.trunc((time / estimatedTime) * 100));
     }, [task]);
 
     const handleShowDialog = useCallback(() => {
@@ -177,7 +214,9 @@ const DailyAnalysisReport: React.FC<IDailyAnalysisReport> = ({ task, executing_u
                             <TableCell>Tarefa: {task.task.title}</TableCell>
                             <TableCell>Tipo: {typeTask[task.task.type - 1]}</TableCell>
                             <TableCell>Usuário: {executing_user}</TableCell>
-                            <TableCell>Data: {format( addDays(new Date(date), 1), 'dd/MM/yyyy')}</TableCell>
+                            <TableCell>
+                                Data: {format( addDays(new Date(date), 1), 'dd/MM/yyyy')}
+                            </TableCell>
                             <TableCell>
                                 <Tooltip title='Ver no mapa'>
                                     <IconButton aria-label='Abrir mapa' onClick={handleShowDialog}>
@@ -194,7 +233,7 @@ const DailyAnalysisReport: React.FC<IDailyAnalysisReport> = ({ task, executing_u
                             <TableCell>Latitude</TableCell>
                             <TableCell>Longitude</TableCell>
                             <TableCell align='center'>Hora</TableCell>
-                            <TableCell>Concluído </TableCell>
+                            <TableCell>Validado</TableCell>
                         </TableRow>
                     </TableHead>
 
@@ -202,15 +241,27 @@ const DailyAnalysisReport: React.FC<IDailyAnalysisReport> = ({ task, executing_u
                         {
                             task.executing[0].markers.map(marker => (
                                 <TableRow key={marker.id}>
-                                    <TableCell>{marker.name ? marker.name : marker.id}</TableCell>
-                                    <TableCell>{marker.latitude}</TableCell>
-                                    <TableCell>{marker.longitude}</TableCell>
-                                    <TableCell align='center'>
+                                    <TableCell 
+                                        className={classes.paddingCell}
+                                    >
+                                        {marker.name ? marker.name : marker.id}
+                                    </TableCell>
+                                    <TableCell 
+                                        className={classes.paddingCell}
+                                    >
+                                        {marker.latitude.toFixed(10)}
+                                    </TableCell>
+                                    <TableCell 
+                                        className={classes.paddingCell}
+                                    >
+                                        {marker.longitude.toFixed(10)}
+                                    </TableCell>
+                                    <TableCell align='center' className={classes.paddingCell}>
                                         { marker.datetime === 0 
                                             ? '-' 
                                             : format(fromUnixTime(marker.datetime), 'HH:mm:ss') }
                                     </TableCell>
-                                    <TableCell align='center'>
+                                    <TableCell align='center' className={classes.paddingCell}>
                                         { 
                                             marker.concluded 
                                             ? <Check className={classes.iconChecked} /> 
@@ -230,19 +281,87 @@ const DailyAnalysisReport: React.FC<IDailyAnalysisReport> = ({ task, executing_u
                     <TableBody>
                         
                         <TableRow>
-                            <TableCell>Tempo de execução</TableCell>
-                            <TableCell>{hours.toFixed(0)}h {minutes.toFixed(0)}m {seconds.toFixed(0)}s</TableCell>
-                            <TableCell>Início { typeTask[task.task.type -1] }</TableCell>
-                            <TableCell>{format(fromUnixTime(startTask), 'HH:mm:ss') }</TableCell>
+                            <TableCell className={classes.paddingCell}>Tempo Estimado</TableCell>
+                            <TableCell 
+                                className={classes.paddingCell}
+                            >
+                                {estimatedHours.toFixed(0)}h {estimatedMinutes.toFixed(0)}m {estimatedSeconds.toFixed(0)}s 
+                            </TableCell>
+                            <TableCell className={classes.paddingCell}>Tempo de Execução</TableCell>
+                            <TableCell 
+                                className={classes.paddingCell}
+                            >
+                                {hours.toFixed(0)}h {minutes.toFixed(0)}m {seconds.toFixed(0)}s
+                            </TableCell>
+                            <TableCell className={classes.paddingCell}>{percentageOfTime}%</TableCell>
+                        </TableRow>
+                        <TableRow>                            
+                            <TableCell 
+                                className={classes.paddingCell}
+                            >
+                                Início { typeTask[task.task.type -1] }
+                            </TableCell>
+                            <TableCell 
+                                className={classes.paddingCell}
+                            >
+                                {format(fromUnixTime(startTask), 'HH:mm:ss') }
+                            </TableCell>
+                            <TableCell 
+                                className={classes.paddingCell}
+                            >
+                                Fim { typeTask[task.task.type -1] }
+                            </TableCell>
+                            <TableCell 
+                                className={classes.paddingCell}
+                            >
+                                {format(fromUnixTime(endTask), 'HH:mm:ss') }
+                            </TableCell>
+                            <TableCell/>
                         </TableRow>
                         <TableRow>
-                            <TableCell>Pontos Concluídos</TableCell>
-                            <TableCell>{concludedMarker} / {totalMarkers}</TableCell>
-                            <TableCell>Fim { typeTask[task.task.type -1] }</TableCell>
-                            <TableCell>{format(fromUnixTime(endTask), 'HH:mm:ss') }</TableCell>
+                        <TableCell 
+                                className={classes.paddingCell}
+                            >
+                                Pontos Validados
+                            </TableCell>
+                            <TableCell 
+                                className={classes.paddingCell}
+                            >
+                                {concludedMarker} / {totalMarkers}
+                            </TableCell>
+                            <TableCell 
+                                className={classes.paddingCell}
+                            >
+                                Cobertura do Pontos
+                            </TableCell>
+                            <TableCell 
+                                className={classes.paddingCell}
+                            >   
+                                <div className={classes.iconCell} >
+                                    { cover }% 
+                                    { 
+                                        cover < 60 
+                                        ? 
+                                            <Tooltip title='Percentual de cobertura baixo'>
+                                                <ErrorOutline className={classes.iconError} />
+                                            </Tooltip>
+                                        :
+                                        cover < 85
+                                        ?
+                                            <Tooltip title='Percentual de cobertura médio'>
+                                                <ReportProblemOutlined  className={classes.iconWarning} />
+                                            </Tooltip>
+                                        :
+                                            <Tooltip title='Percentual de cobertura Alto'>
+                                                <VerifiedUserOutlined  className={classes.iconSuccess} />
+                                            </Tooltip>
+                                    }
+                                </div>
+                            </TableCell>
+                            <TableCell/>
+                           
                         </TableRow>
                     </TableBody>
-
 
                 </Table>
             </TableContainer>
