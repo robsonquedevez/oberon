@@ -360,33 +360,26 @@ const Analysis: React.FC = () => {
 
                     <ShowDetails>
 
-                        {task.executing.map(execute => (
+                        {analysisType === 2 &&
 
-                            <div>
+                            <PeriodAnalysisReport 
+                                task={task} 
+                                executing_user={users.filter(user => user.id === userSelect)[0].name}
+                                startDate={searchStartDate}
+                                endDate={searchEndDate}
+                            />
+                            
+                        }
 
-                                {analysisType === 2 &&
-
-                                    <PeriodAnalysisReport 
-                                        task={task} 
-                                        executing_user={users.filter(user => user.id === userSelect)[0].name}
-                                        startDate={searchStartDate}
-                                        endDate={searchEndDate}
-                                    />
-                                    
-                                }
-
-                                {analysisType === 1 && 
-                                
-                                    <DailyAnalysisReport 
-                                        task={task}
-                                        executing_user={users.filter(user => user.id === userSelect)[0].name}
-                                        date={searchStartDate}
-                                    />
-                                
-                                }
-                            </div>
-
-                        ))}              
+                        {analysisType === 1 && 
+                        
+                            <DailyAnalysisReport 
+                                task={task}
+                                executing_user={users.filter(user => user.id === userSelect)[0].name}
+                                date={searchStartDate}
+                            />
+                        
+                        }
 
                     </ShowDetails>
                 }
