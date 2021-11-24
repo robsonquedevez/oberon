@@ -115,7 +115,7 @@ interface IResults {
     cover: number;
     startTask: number;
     endTask: number;
-    historic: boolean;
+    historic: boolean | null;
 }
 
 interface IPeriodAnalysisReport {
@@ -148,7 +148,9 @@ const PeriodAnalysisReport: React.FC<IPeriodAnalysisReport> = ({ task, executing
             const cover = Math.trunc((concludedMarker/totalMarkers) * 100);
             const startTask = running.coordinates[0].timestamp;
             const endTask = running.coordinates[running.coordinates.length - 1].timestamp;
-            const historic = ( response.length > 1 && response[response.length - 1].concludedMarker > concludedMarker) ? true : false;
+            const historic = response.length < 1 ? null : response[response.length - 1].concludedMarker < concludedMarker ? true : false;
+            
+            console.log(response.length);
 
             const data = {
                 date, 
@@ -170,7 +172,7 @@ const PeriodAnalysisReport: React.FC<IPeriodAnalysisReport> = ({ task, executing
 
         setResults(response);
 
-    }, []);
+    }, [task]);
 
     return (    
         
@@ -205,15 +207,22 @@ const PeriodAnalysisReport: React.FC<IPeriodAnalysisReport> = ({ task, executing
                         {
                             results.map(result => (
                                 <TableRow key={result.date}>
-                                    <TableCell>{format( new Date(result.date), 'dd/MM/yyyy')}</TableCell>
+                                    <TableCell>{format( addDays(new Date(result.date), 1), 'dd/MM/yyyy')}</TableCell>
                                     <TableCell>
                                         <div className={classes.iconCell}>
                                             {result.concludedMarker} / {result.totalMarkers}
                                             {   
+                                                result.historic === null ?
+                                                    null
+                                                :
                                                 result.historic ?
-                                                <ArrowUpward className={classes.iconSuccess} /> 
+                                                <Tooltip title='Número de pontos validados aumentou'>
+                                                    <ArrowUpward className={classes.iconSuccess} />
+                                                </Tooltip>
                                                 : 
-                                                <ArrowDownward className={classes.iconError}/>
+                                                <Tooltip title='Número de pontos validados diminuiu'>
+                                                    <ArrowDownward className={classes.iconError}/>
+                                                </Tooltip>
                                                 
                                             }
                                         </div>

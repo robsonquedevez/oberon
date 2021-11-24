@@ -22,7 +22,7 @@ import {
     OpenInNew,
     ErrorOutline,
     ReportProblemOutlined,
-    VerifiedUserOutlined
+    VerifiedUserOutlined,    
 } from '@material-ui/icons';
 import { 
     format, 
@@ -170,8 +170,7 @@ const DailyAnalysisReport: React.FC<IDailyAnalysisReport> = ({ task, executing_u
 
     const typeTask = ['Ronda', 'Quadrante', 'Ponto de Chegada'];
 
-    useEffect(() => {
-
+    useEffect(() => {  
         const concluded = task.executing[0].markers.filter(marker => marker.concluded === true);
 
         const time = differenceInSeconds(
@@ -196,14 +195,15 @@ const DailyAnalysisReport: React.FC<IDailyAnalysisReport> = ({ task, executing_u
         setEstimatedHours(estimatedTime / 3600);
         setEstimatedMinutes(Math.trunc((estimatedTime % 3600) / 60));
         setEstimatedSeconds(estimatedTime % 60);
-        setPercentageOfTime(Math.trunc((time / estimatedTime) * 100));
+        setPercentageOfTime(Math.trunc((time / estimatedTime) * 100));        
+
     }, [task]);
 
     const handleShowDialog = useCallback(() => {
         setOpen(!open);
     }, [open]);
 
-    return (
+    return (         
         <Container>
             <TableContainer component={Paper} className={classes.container}>
 
@@ -359,7 +359,7 @@ const DailyAnalysisReport: React.FC<IDailyAnalysisReport> = ({ task, executing_u
                                 </div>
                             </TableCell>
                             <TableCell/>
-                           
+                        
                         </TableRow>
                     </TableBody>
 
@@ -411,7 +411,6 @@ const DailyAnalysisReport: React.FC<IDailyAnalysisReport> = ({ task, executing_u
                 </Map>
 
             </Dialog>
-
         </Container>
     );
 
