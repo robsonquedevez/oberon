@@ -92,3 +92,18 @@ export const ShowDetails = styled.div`
         color: #A1A1A1;
     }
 `;
+
+export const TextNotFound = styled.div`
+    display: flex;
+    justify-content: 'center';
+    align-items: 'center';
+    color: #566573;
+
+    h4 {
+        font-weight: 400;
+        font-size: 1.2rem;
+        font-family: 'Roboto', sans-serif;
+        margin-bottom: 1rem;
+        
+    }
+`;

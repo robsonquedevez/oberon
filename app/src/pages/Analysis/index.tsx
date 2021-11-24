@@ -15,6 +15,7 @@ import {
 } from '@material-ui/core';
 import {
     Search as SearchIcon,
+    SentimentVeryDissatisfied
 } from '@material-ui/icons';
 import { useSnackbar } from 'notistack'
 
@@ -31,6 +32,7 @@ import {
     Container,
     Search,
     ShowDetails,
+    TextNotFound
 } from './styles';
 
 const useStyles = makeStyles((theme) => ({
@@ -356,7 +358,7 @@ const Analysis: React.FC = () => {
                 </Search>
 
                 {
-                    task &&
+                    task === null ? null : task.executing.length > 0 ?
 
                     <ShowDetails>
 
@@ -381,6 +383,14 @@ const Analysis: React.FC = () => {
                         
                         }
 
+                    </ShowDetails>
+
+                    :
+
+                    <ShowDetails>
+                        <TextNotFound>
+                            <h4>Nenhum registro encontrado</h4> <SentimentVeryDissatisfied />
+                        </TextNotFound>
                     </ShowDetails>
                 }
 
