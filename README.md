@@ -1,14 +1,14 @@
-# Oberon
+# Oberon App
 
-## 🌎 Sistema de Monitoramento por Geolocalização
+## 🌎 Sistema de Monitoramento de Ronda por Geolocalização
 
-**Oberon** tem como objetivo analisar dados de geolocalização coletados de dispositivos móveis de equipes externas através de um aplicativo _mobile_, os dados coletados de geolocalização serão armazenados em uma base dados que ficará disponível para o acesso em um sistema web para gestão e análise desses dados.
+**Oberon** tem como objetivo coletar e analisar dados de geolocalização de atividades de ronda. Através de um aplicativo _mobile_, os dados coletados de geolocalização serão enviado para API e armazenados em uma base dados que disponibiliza para o acesso em um sistema _web_ para gestão e análise desses dados.
 
-O sistema web fará juntamente com a gestão dos dados a indicação de rotas obrigatórias, permitindo a inserção de trajetórias completas ou pontos de checagem no mapa para orientar as equipes externas no cumprimento de suas atividades.
+O sistema web também é responsável pelaa gestão dos dados a indicação de rotas obrigatórias, permitindo a inserção de trajetórias completas no mapa para orientar as equipes que executam as atividades.
 
-A gestão de equipes externas por geolocalização buscará melhorias nos processos vigentes, em rotas percorridas a fim de mensurar o desempenho das equipes externas para diminuir custos operacionais.
+A automação dessa atividade pode facilitar o acesso às informações de segurança e a mitigação de falhas humanas.
 
-### 🚀 Tecnologias utilizadas
+### 🚀 Principais Tecnologias
 
 - [Node JS](https://nodejs.org/en/)
 - [React JS](https://reactjs.org/)
@@ -20,11 +20,14 @@ A gestão de equipes externas por geolocalização buscará melhorias nos proces
 - [Styled-components](https://styled-components.com/)
 - [Leaflet](https://leafletjs.com/)
 - [React Leaflet](https://react-leaflet.js.org/)
+- [MongoDB](https://www.mongodb.com/)
+- [TypeORM](https://typeorm.io/#/)
+- [Typescript](https://www.typescriptlang.org/)
+- [Yup](https://github.com/jquense/yup)
+- [MaterialUI](https://mui.com/)
 
 ### 💊 Monorepo
 
 - Server
 - Web
 - Mobile
-
-<h2 style='color: red'> Projeto em desenvolvimento... </h2>
